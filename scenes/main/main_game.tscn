@@ -1,0 +1,66 @@
+[gd_scene load_steps=8 format=3 uid="uid://c8taphoamaunuoc"]
+
+[ext_resource type="Script" path="res://scripts/systems/store_world.gd" id="1_world"]
+[ext_resource type="Script" path="res://scripts/systems/pan_zoom_camera.gd" id="2_cam"]
+[ext_resource type="Script" path="res://scripts/ui/game_ui_controller.gd" id="3_ui"]
+[ext_resource type="Shader" path="res://shaders/watercolor_reveal.gdshader" id="4_reveal_shd"]
+[ext_resource type="Shader" path="res://shaders/paper_overlay.gdshader" id="5_paper_shd"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_reveal"]
+shader = ExtResource("4_reveal_shd")
+shader_parameter/reveal_radius = 0.48
+shader_parameter/center_uv = Vector2(0.48, 0.52)
+shader_parameter/paper_bg = Color(0.964706, 0.945098, 0.905882, 1)
+shader_parameter/pigment_rim = Color(0.82, 0.62, 0.38, 0.35)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_paper"]
+shader = ExtResource("5_paper_shd")
+shader_parameter/paper_grain_strength = 0.045
+shader_parameter/vignette_strength = 0.18
+shader_parameter/paper_tint = Color(0.964706, 0.945098, 0.905882, 1)
+
+[node name="MainGame" type="Node2D"]
+
+[node name="StoreWorld" type="Node2D" parent="."]
+script = ExtResource("1_world")
+
+[node name="YSortEntities" type="Node2D" parent="StoreWorld"]
+y_sort_enabled = true
+
+[node name="WatercolorRevealMask" type="ColorRect" parent="StoreWorld"]
+material = SubResource("ShaderMaterial_reveal")
+offset_left = -200.0
+offset_top = -150.0
+offset_right = 1800.0
+offset_bottom = 1050.0
+mouse_filter = 2
+
+[node name="PanZoomCamera" type="Camera2D" parent="."]
+position = Vector2(800, 450)
+script = ExtResource("2_cam")
+
+[node name="UILayer" type="CanvasLayer" parent="." ]
+layer = 5
+
+[node name="GameUIController" type="Control" parent="UILayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_ui")
+
+[node name="PaperOverlayLayer" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="PaperGrainRect" type="ColorRect" parent="PaperOverlayLayer"]
+material = SubResource("ShaderMaterial_paper")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+

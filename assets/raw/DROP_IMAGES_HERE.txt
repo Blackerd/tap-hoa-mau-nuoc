@@ -1,0 +1,8 @@
+Hãy bỏ các tấm ảnh bạn tạo từ bộ Prompt vào thư mục này (c:\cty\tap_hoa_mau_nuoc\assets\raw\).
+Tên file gợi ý (hoặc bạn cứ giữ nguyên tên file tải về, mình sẽ tự nhận diện và cắt tách nền giúp bạn):
+1. bg_store_watercolor.png  (Background mặt bằng quán & sân cây bàng)
+2. sheet_furniture.png      (Sprite sheet kệ gỗ, tủ kem, quầy thu ngân, bàn trà đá)
+3. sheet_items.png          (Sprite sheet các món hàng tạp hóa & icon)
+4. sheet_customers.png      (Sprite sheet nhân vật khách hàng & chủ quán)
+5. sheet_ui_frames.png      (Sprite sheet khung giấy UI, sổ cái, con dấu mộc)
+

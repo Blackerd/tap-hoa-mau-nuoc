@@ -1,0 +1,48 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Tạp Hóa Màu Nước (Style 8)"
+config/description="Game quản lý tiệm tạp hóa đầu ngõ phong cách ký họa Bút mực & Màu nước (2.5D Top-down/Isometric)"
+run/main_scene="res://scenes/main/main_game.tscn"
+config/features=PackedStringArray("4.3", "GL Compatibility")
+config/icon="res://icon.svg"
+
+[autoload]
+
+EventBus="*res://autoloads/event_bus.gd"
+GameManager="*res://autoloads/game_manager.gd"
+EconomyManager="*res://autoloads/economy_manager.gd"
+
+[debug]
+
+gdscript/warnings/unused_signal=0
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/stretch/scale_mode="fractional"
+window/handheld/orientation=4
+
+[input_devices]
+
+pointing/emulate_mouse_from_touch=true
+pointing/emulate_touch_from_mouse=false
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+gl_compatibility/driver.windows="opengl3_angle"
+environment/defaults/default_clear_color=Color(0.964706, 0.945098, 0.905882, 1)

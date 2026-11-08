@@ -1,0 +1,18 @@
+# Godot 4+ cache & local editor state
+.godot/
+
+# Exported builds
+build/
+exports/
+*.apk
+*.aab
+*.ipa
+*.exe
+*.pck
+
+# OS / Editor temporary files
+.DS_Store
+Thumbs.db
+*.tmp
+*.bak
+*.swp

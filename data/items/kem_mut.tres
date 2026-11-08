@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/item_data.gd" id="1_item"]
+
+[resource]
+script = ExtResource("1_item")
+id = "kem_mut"
+display_name = "Kem Mút Đậu Xanh"
+category = "Drink"
+wholesale_cost = 1500
+retail_price = 3500
+weather_boost = "Sunny"
+accent_color = Color(0.466667, 0.658824, 0.552941, 1)
+description = "Giải nhiệt cực đỉnh những buổi trưa nắng vàng."
+

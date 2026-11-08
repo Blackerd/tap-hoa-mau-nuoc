@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="22" fill="#F6F1E7" stroke="#2C221E" stroke-width="5"/>
+  <!-- Watercolor sun wash -->
+  <circle cx="96" cy="32" r="20" fill="#E5A93C" opacity="0.45"/>
+  <!-- Awning -->
+  <path d="M18 52 L32 28 L96 28 L110 52 Z" fill="#C84B31" stroke="#2C221E" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M40 28 L36 52 M64 28 L64 52 M88 28 L92 52" stroke="#F6F1E7" stroke-width="4"/>
+  <!-- Shop body -->
+  <rect x="26" y="52" width="76" height="54" fill="#EBDCCB" stroke="#2C221E" stroke-width="4"/>
+  <!-- Counter & Shelves -->
+  <rect x="34" y="64" width="34" height="22" fill="#6B8E78" opacity="0.6" stroke="#2C221E" stroke-width="3"/>
+  <rect x="74" y="64" width="20" height="42" fill="#D99B52" stroke="#2C221E" stroke-width="3"/>
+  <!-- Ground line -->
+  <path d="M12 106 L116 106" stroke="#2C221E" stroke-width="5" stroke-linecap="round"/>
+</svg>
+
