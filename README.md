@@ -26,3 +26,4 @@ Game 2D/2.5D quản lý tiệm tạp hóa Việt Nam phong cách ký họa **Bú
 1. Tải **Godot Engine 4.3+** (hoặc **Godot 4.7.2 stable**).
 2. Mở Godot Project Manager $\rightarrow$ bấm **Import** $\rightarrow$ chọn file `project.godot` trong thư mục dự án.
 3. Bấm **Run Project (`F5`)** để trải nghiệm ngay.
+
