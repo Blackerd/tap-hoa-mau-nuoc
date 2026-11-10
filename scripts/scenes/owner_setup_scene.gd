@@ -26,6 +26,10 @@ var lbl_preview_greeting: Label
 
 var selected_perk_id: String = "neighbor"
 var perk_buttons: Dictionary = {}
+var kb_modal: PanelContainer
+var kb_target_input: LineEdit
+var kb_preview_lbl: Label
+var kb_title_lbl: Label
 
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -200,15 +204,33 @@ func _build_ui() -> void:
 	l1.add_theme_font_size_override("font_size", 16)
 	v1.add_child(l1)
 
+	var inp_row1 := HBoxContainer.new()
+	inp_row1.add_theme_constant_override("separation", 8)
+	v1.add_child(inp_row1)
+
 	input_owner_name = LineEdit.new()
 	input_owner_name.text = "Bà Ba"
 	input_owner_name.placeholder_text = "Ví dụ: Bà Ba, Cô Út, Chú Tư, Minh..."
+	input_owner_name.virtual_keyboard_enabled = false
+	input_owner_name.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	input_owner_name.custom_minimum_size = Vector2(0, 44)
 	input_owner_name.add_theme_color_override("font_color", INK_DARK)
 	input_owner_name.add_theme_font_size_override("font_size", 18)
 	input_owner_name.add_theme_stylebox_override("normal", _style_box(PAPER_CREAM, INK_DARK, 1))
 	input_owner_name.text_changed.connect(func(_t: String) -> void: _update_live_preview())
-	v1.add_child(input_owner_name)
+	input_owner_name.gui_input.connect(func(ev: InputEvent) -> void:
+		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+			_open_ingame_kb(input_owner_name, "NHẬP TÊN / CÁCH XƯNG HÔ CHỦ QUÁN")
+	)
+	inp_row1.add_child(input_owner_name)
+
+	var btn_kb1 := Button.new()
+	btn_kb1.text = "Gõ Tên Riêng"
+	_apply_btn(btn_kb1, TEX_BTN_YELLOW, 15)
+	btn_kb1.pressed.connect(func() -> void:
+		_open_ingame_kb(input_owner_name, "NHẬP TÊN / CÁCH XƯNG HÔ CHỦ QUÁN")
+	)
+	inp_row1.add_child(btn_kb1)
 
 	var row1_presets := HBoxContainer.new()
 	row1_presets.add_theme_constant_override("separation", 8)
@@ -220,7 +242,7 @@ func _build_ui() -> void:
 	preset_lbl1.add_theme_font_size_override("font_size", 15)
 	row1_presets.add_child(preset_lbl1)
 
-	for po in ["Bà Ba", "Cô Út", "Chú Tư", "Anh Minh", "Chị Lan"]:
+	for po in ["Bà Ba", "Cô Út", "Chú Tư", "Dì Chánh", "Anh Minh", "Chị Lan"]:
 		var b := Button.new()
 		b.text = po
 		_apply_btn(b, TEX_BTN_CREAM, 15)
@@ -246,15 +268,33 @@ func _build_ui() -> void:
 	l2.add_theme_font_size_override("font_size", 16)
 	v2.add_child(l2)
 
+	var inp_row2 := HBoxContainer.new()
+	inp_row2.add_theme_constant_override("separation", 8)
+	v2.add_child(inp_row2)
+
 	input_store_name = LineEdit.new()
 	input_store_name.text = "TẠP HÓA BÀ BA"
 	input_store_name.placeholder_text = "Ví dụ: TẠP HÓA BÀ BA, TIỆM KÝ ỨC..."
+	input_store_name.virtual_keyboard_enabled = false
+	input_store_name.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	input_store_name.custom_minimum_size = Vector2(0, 44)
 	input_store_name.add_theme_color_override("font_color", STAMP_RED)
 	input_store_name.add_theme_font_size_override("font_size", 18)
 	input_store_name.add_theme_stylebox_override("normal", _style_box(PAPER_CREAM, INK_DARK, 1))
 	input_store_name.text_changed.connect(func(_t: String) -> void: _update_live_preview())
-	v2.add_child(input_store_name)
+	input_store_name.gui_input.connect(func(ev: InputEvent) -> void:
+		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+			_open_ingame_kb(input_store_name, "ĐẶT TÊN BIỂN HIỆU TIỆM TẠP HÓA")
+	)
+	inp_row2.add_child(input_store_name)
+
+	var btn_kb2 := Button.new()
+	btn_kb2.text = "Gõ Tên Tiệm"
+	_apply_btn(btn_kb2, TEX_BTN_YELLOW, 15)
+	btn_kb2.pressed.connect(func() -> void:
+		_open_ingame_kb(input_store_name, "ĐẶT TÊN BIỂN HIỆU TIỆM TẠP HÓA")
+	)
+	inp_row2.add_child(btn_kb2)
 
 	var row2_presets := HBoxContainer.new()
 	row2_presets.add_theme_constant_override("separation", 8)
@@ -337,6 +377,121 @@ func _build_ui() -> void:
 		GameManager.complete_owner_setup(input_owner_name.text, input_store_name.text, selected_perk_id)
 	)
 	bot_row.add_child(btn_confirm)
+
+	_build_ingame_keyboard()
+
+func _build_ingame_keyboard() -> void:
+	kb_modal = PanelContainer.new()
+	kb_modal.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	kb_modal.custom_minimum_size = Vector2(920, 460)
+	kb_modal.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	kb_modal.grow_vertical = Control.GROW_DIRECTION_BOTH
+	kb_modal.add_theme_stylebox_override("panel", _style_tex_panel(TEX_CARD_BROWN, 28, 22))
+	kb_modal.visible = false
+	add_child(kb_modal)
+
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 10)
+	kb_modal.add_child(v)
+
+	kb_title_lbl = Label.new()
+	kb_title_lbl.text = "BÀN PHÍM TRONG GAME (KHÔNG BỊ CHE MÀN HÌNH DỌC)"
+	kb_title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	kb_title_lbl.add_theme_color_override("font_color", STAMP_RED)
+	kb_title_lbl.add_theme_font_size_override("font_size", 20)
+	v.add_child(kb_title_lbl)
+
+	var preview_box := PanelContainer.new()
+	preview_box.add_theme_stylebox_override("panel", _style_box(PAPER_CREAM, INK_DARK, 2))
+	v.add_child(preview_box)
+
+	kb_preview_lbl = Label.new()
+	kb_preview_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	kb_preview_lbl.add_theme_color_override("font_color", INK_DARK)
+	kb_preview_lbl.add_theme_font_size_override("font_size", 22)
+	preview_box.add_child(kb_preview_lbl)
+
+	var rows: Array[Array] = [
+		["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
+		["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
+		["A", "S", "D", "F", "G", "H", "J", "K", "L", "Đ"],
+		["Z", "X", "C", "V", "B", "N", "M", "Ấ", "Ơ", "Ư"]
+	]
+	for r in rows:
+		var h := HBoxContainer.new()
+		h.alignment = BoxContainer.ALIGNMENT_CENTER
+		h.add_theme_constant_override("separation", 6)
+		v.add_child(h)
+		for ch in r:
+			var kbtn := Button.new()
+			kbtn.text = ch
+			kbtn.custom_minimum_size = Vector2(76, 48)
+			_apply_btn(kbtn, TEX_BTN_CREAM, 17)
+			var c_str: String = ch
+			kbtn.pressed.connect(func() -> void:
+				if kb_target_input:
+					kb_target_input.text += c_str
+					kb_preview_lbl.text = kb_target_input.text
+					_update_live_preview()
+			)
+			h.add_child(kbtn)
+
+	var act_row := HBoxContainer.new()
+	act_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	act_row.add_theme_constant_override("separation", 10)
+	v.add_child(act_row)
+
+	var btn_space := Button.new()
+	btn_space.text = "Dấu Cách (Space)"
+	btn_space.custom_minimum_size = Vector2(220, 50)
+	_apply_btn(btn_space, TEX_BTN_CREAM, 16)
+	btn_space.pressed.connect(func() -> void:
+		if kb_target_input:
+			kb_target_input.text += " "
+			kb_preview_lbl.text = kb_target_input.text
+			_update_live_preview()
+	)
+	act_row.add_child(btn_space)
+
+	var btn_bs := Button.new()
+	btn_bs.text = "<< Xóa 1 Chữ"
+	btn_bs.custom_minimum_size = Vector2(160, 50)
+	_apply_btn(btn_bs, TEX_BTN_PINK, 16)
+	btn_bs.pressed.connect(func() -> void:
+		if kb_target_input and kb_target_input.text.length() > 0:
+			kb_target_input.text = kb_target_input.text.substr(0, kb_target_input.text.length() - 1)
+			kb_preview_lbl.text = kb_target_input.text
+			_update_live_preview()
+	)
+	act_row.add_child(btn_bs)
+
+	var btn_clear := Button.new()
+	btn_clear.text = "Xóa Hết"
+	btn_clear.custom_minimum_size = Vector2(130, 50)
+	_apply_btn(btn_clear, TEX_BTN_PINK, 16)
+	btn_clear.pressed.connect(func() -> void:
+		if kb_target_input:
+			kb_target_input.text = ""
+			kb_preview_lbl.text = ""
+			_update_live_preview()
+	)
+	act_row.add_child(btn_clear)
+
+	var btn_done := Button.new()
+	btn_done.text = "Xong (Lưu Tên) >>"
+	btn_done.custom_minimum_size = Vector2(220, 50)
+	_apply_btn(btn_done, TEX_BTN_GREEN, 17)
+	btn_done.pressed.connect(func() -> void:
+		kb_modal.visible = false
+		_update_live_preview()
+	)
+	act_row.add_child(btn_done)
+
+func _open_ingame_kb(target: LineEdit, title_text: String) -> void:
+	kb_target_input = target
+	kb_title_lbl.text = title_text
+	kb_preview_lbl.text = target.text
+	kb_modal.visible = true
 
 func _select_perk(perk_id: String) -> void:
 	selected_perk_id = perk_id

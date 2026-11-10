@@ -571,6 +571,7 @@ func _build_scene2_owner_setup() -> void:
 	input_owner_name = LineEdit.new()
 	input_owner_name.text = "Bà Ba"
 	input_owner_name.placeholder_text = "Nhập tên chủ quán..."
+	input_owner_name.virtual_keyboard_enabled = false
 	input_owner_name.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	input_owner_name.add_theme_color_override("font_color", INK_DARK)
 	input_owner_name.add_theme_stylebox_override("normal", _style_paper_panel(PAPER_CREAM, INK_DARK, 1))
@@ -606,6 +607,7 @@ func _build_scene2_owner_setup() -> void:
 	input_store_name = LineEdit.new()
 	input_store_name.text = "TẠP HÓA BÀ BA"
 	input_store_name.placeholder_text = "Nhập tên biển hiệu tạp hóa..."
+	input_store_name.virtual_keyboard_enabled = false
 	input_store_name.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	input_store_name.add_theme_color_override("font_color", STAMP_RED)
 	input_store_name.add_theme_stylebox_override("normal", _style_paper_panel(PAPER_CREAM, INK_DARK, 1))
