@@ -62,8 +62,8 @@ func _style_tex_button(tex: Texture2D, modulate_col: Color = Color.WHITE) -> Sty
 	sbt.content_margin_bottom = 8
 	return sbt
 
-func _apply_btn(btn: Button, tex: Texture2D, f_size: int = 13) -> void:
-	btn.custom_minimum_size.y = maxf(btn.custom_minimum_size.y, 40.0)
+func _apply_btn(btn: Button, tex: Texture2D, f_size: int = 15) -> void:
+	btn.custom_minimum_size.y = maxf(btn.custom_minimum_size.y, 44.0)
 	btn.add_theme_stylebox_override("normal", _style_tex_button(tex, Color.WHITE))
 	btn.add_theme_stylebox_override("hover", _style_tex_button(tex, Color(1.06, 1.04, 1.0, 1.0)))
 	btn.add_theme_stylebox_override("pressed", _style_tex_button(tex, Color(0.92, 0.89, 0.85, 1.0)))
@@ -102,8 +102,8 @@ func _build_ui() -> void:
 	add_child(center)
 
 	var card := PanelContainer.new()
-	card.custom_minimum_size = Vector2(920, 570)
-	card.add_theme_stylebox_override("panel", _style_tex_panel(TEX_CARD_BROWN, 34, 26))
+	card.custom_minimum_size = Vector2(1180, 664)
+	card.add_theme_stylebox_override("panel", _style_tex_panel(TEX_CARD_BROWN, 32, 22))
 	center.add_child(card)
 
 	var main_vbox := VBoxContainer.new()
@@ -114,7 +114,7 @@ func _build_ui() -> void:
 	title.text = "GIẤY ĐĂNG KÝ KHAI TRƯƠNG TIỆM TẠP HÓA ĐẦU NGÕ"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_color_override("font_color", STAMP_RED)
-	title.add_theme_font_size_override("font_size", 21)
+	title.add_theme_font_size_override("font_size", 26)
 	main_vbox.add_child(title)
 
 	var body_hbox := HBoxContainer.new()
@@ -126,20 +126,20 @@ func _build_ui() -> void:
 	# CỘT TRÁI: XEM TRƯỚC BẢNG HIỆU GỖ & BÀ CHỦ QUÁN
 	# ==========================================
 	var preview_panel := PanelContainer.new()
-	preview_panel.custom_minimum_size = Vector2(285, 0)
+	preview_panel.custom_minimum_size = Vector2(325, 0)
 	preview_panel.add_theme_stylebox_override("panel", _style_box(PAPER_WARM, INK_DARK, 2))
 	body_hbox.add_child(preview_panel)
 
 	var prev_vbox := VBoxContainer.new()
 	prev_vbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	prev_vbox.add_theme_constant_override("separation", 12)
+	prev_vbox.add_theme_constant_override("separation", 14)
 	preview_panel.add_child(prev_vbox)
 
 	var prev_caption := Label.new()
 	prev_caption.text = "Xem Trước Biển Hiệu Tiệm"
 	prev_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	prev_caption.add_theme_color_override("font_color", INK_DARK)
-	prev_caption.add_theme_font_size_override("font_size", 14)
+	prev_caption.add_theme_font_size_override("font_size", 17)
 	prev_vbox.add_child(prev_caption)
 
 	# Mô phỏng tấm biển gỗ trên mái hiên
@@ -154,18 +154,18 @@ func _build_ui() -> void:
 	lbl_preview_sign_title = Label.new()
 	lbl_preview_sign_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl_preview_sign_title.add_theme_color_override("font_color", INK_DARK)
-	lbl_preview_sign_title.add_theme_font_size_override("font_size", 18)
+	lbl_preview_sign_title.add_theme_font_size_override("font_size", 21)
 	wb_vbox.add_child(lbl_preview_sign_title)
 
 	lbl_preview_sign_owner = Label.new()
 	lbl_preview_sign_owner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl_preview_sign_owner.add_theme_color_override("font_color", Color("#7A3E26"))
-	lbl_preview_sign_owner.add_theme_font_size_override("font_size", 13)
+	lbl_preview_sign_owner.add_theme_font_size_override("font_size", 16)
 	wb_vbox.add_child(lbl_preview_sign_owner)
 
 	var sk_tex := TextureRect.new()
 	sk_tex.texture = TEX_SHOPKEEPER
-	sk_tex.custom_minimum_size = Vector2(90, 120)
+	sk_tex.custom_minimum_size = Vector2(110, 145)
 	sk_tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	sk_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	prev_vbox.add_child(sk_tex)
@@ -174,7 +174,7 @@ func _build_ui() -> void:
 	lbl_preview_greeting.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lbl_preview_greeting.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl_preview_greeting.add_theme_color_override("font_color", SAGE_GREEN.darkened(0.28))
-	lbl_preview_greeting.add_theme_font_size_override("font_size", 12)
+	lbl_preview_greeting.add_theme_font_size_override("font_size", 15)
 	prev_vbox.add_child(lbl_preview_greeting)
 
 	# ==========================================
@@ -197,31 +197,33 @@ func _build_ui() -> void:
 	var l1 := Label.new()
 	l1.text = "1. Điền Tên / Cách Xưng Hô Của Chủ Quán (Player):"
 	l1.add_theme_color_override("font_color", INK_DARK)
-	l1.add_theme_font_size_override("font_size", 14)
+	l1.add_theme_font_size_override("font_size", 16)
 	v1.add_child(l1)
 
 	input_owner_name = LineEdit.new()
 	input_owner_name.text = "Bà Ba"
 	input_owner_name.placeholder_text = "Ví dụ: Bà Ba, Cô Út, Chú Tư, Minh..."
+	input_owner_name.custom_minimum_size = Vector2(0, 44)
 	input_owner_name.add_theme_color_override("font_color", INK_DARK)
+	input_owner_name.add_theme_font_size_override("font_size", 18)
 	input_owner_name.add_theme_stylebox_override("normal", _style_box(PAPER_CREAM, INK_DARK, 1))
 	input_owner_name.text_changed.connect(func(_t: String) -> void: _update_live_preview())
 	v1.add_child(input_owner_name)
 
 	var row1_presets := HBoxContainer.new()
-	row1_presets.add_theme_constant_override("separation", 6)
+	row1_presets.add_theme_constant_override("separation", 8)
 	v1.add_child(row1_presets)
 
 	var preset_lbl1 := Label.new()
 	preset_lbl1.text = "Chọn nhanh:"
 	preset_lbl1.add_theme_color_override("font_color", INK_DARK)
-	preset_lbl1.add_theme_font_size_override("font_size", 12)
+	preset_lbl1.add_theme_font_size_override("font_size", 15)
 	row1_presets.add_child(preset_lbl1)
 
 	for po in ["Bà Ba", "Cô Út", "Chú Tư", "Anh Minh", "Chị Lan"]:
 		var b := Button.new()
 		b.text = po
-		_apply_btn(b, TEX_BTN_CREAM, 12)
+		_apply_btn(b, TEX_BTN_CREAM, 15)
 		var val: String = po
 		b.pressed.connect(func() -> void:
 			input_owner_name.text = val
@@ -241,31 +243,33 @@ func _build_ui() -> void:
 	var l2 := Label.new()
 	l2.text = "2. Đặt Tên Biển Hiệu Tiệm Tạp Hóa:"
 	l2.add_theme_color_override("font_color", INK_DARK)
-	l2.add_theme_font_size_override("font_size", 14)
+	l2.add_theme_font_size_override("font_size", 16)
 	v2.add_child(l2)
 
 	input_store_name = LineEdit.new()
 	input_store_name.text = "TẠP HÓA BÀ BA"
 	input_store_name.placeholder_text = "Ví dụ: TẠP HÓA BÀ BA, TIỆM KÝ ỨC..."
+	input_store_name.custom_minimum_size = Vector2(0, 44)
 	input_store_name.add_theme_color_override("font_color", STAMP_RED)
+	input_store_name.add_theme_font_size_override("font_size", 18)
 	input_store_name.add_theme_stylebox_override("normal", _style_box(PAPER_CREAM, INK_DARK, 1))
 	input_store_name.text_changed.connect(func(_t: String) -> void: _update_live_preview())
 	v2.add_child(input_store_name)
 
 	var row2_presets := HBoxContainer.new()
-	row2_presets.add_theme_constant_override("separation", 6)
+	row2_presets.add_theme_constant_override("separation", 8)
 	v2.add_child(row2_presets)
 
 	var preset_lbl2 := Label.new()
 	preset_lbl2.text = "Gợi ý tên tiệm:"
 	preset_lbl2.add_theme_color_override("font_color", INK_DARK)
-	preset_lbl2.add_theme_font_size_override("font_size", 12)
+	preset_lbl2.add_theme_font_size_override("font_size", 15)
 	row2_presets.add_child(preset_lbl2)
 
 	for ps in ["TẠP HÓA BÀ BA", "TIỆM KÝ ỨC", "TẠP HÓA GỐC ĐA", "TẠP HÓA MÀU NƯỚC"]:
 		var b := Button.new()
 		b.text = ps
-		_apply_btn(b, TEX_BTN_CREAM, 11)
+		_apply_btn(b, TEX_BTN_CREAM, 14)
 		var val: String = ps
 		b.pressed.connect(func() -> void:
 			input_store_name.text = val
@@ -285,7 +289,7 @@ func _build_ui() -> void:
 	var l3 := Label.new()
 	l3.text = "3. Chọn Lợi Thế Gia Truyền Khi Mở Tiệm:"
 	l3.add_theme_color_override("font_color", INK_DARK)
-	l3.add_theme_font_size_override("font_size", 14)
+	l3.add_theme_font_size_override("font_size", 16)
 	v3.add_child(l3)
 
 	var perk_row := HBoxContainer.new()
@@ -302,6 +306,7 @@ func _build_ui() -> void:
 		pb.text = p["label"]
 		pb.icon = p["icon"]
 		pb.expand_icon = true
+		pb.custom_minimum_size = Vector2(0, 48)
 		pb.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		var pid: String = p["id"]
 		perk_buttons[pid] = pb
@@ -311,22 +316,23 @@ func _build_ui() -> void:
 
 	# Dòng nút xác nhận dưới đáy
 	var bot_row := HBoxContainer.new()
-	bot_row.add_theme_constant_override("separation", 12)
+	bot_row.add_theme_constant_override("separation", 14)
 	main_vbox.add_child(bot_row)
 
 	var btn_back := Button.new()
-	btn_back.text = "◀ Quay Lại Bìa Sổ"
-	_apply_btn(btn_back, TEX_BTN_CREAM, 13)
+	btn_back.text = "<< Quay Lại Bìa Sổ"
+	btn_back.custom_minimum_size = Vector2(210, 54)
+	_apply_btn(btn_back, TEX_BTN_CREAM, 16)
 	btn_back.pressed.connect(func() -> void:
 		GameManager.change_to_phase_scene(GameManager.StorePhase.STORY_INTRO)
 	)
 	bot_row.add_child(btn_back)
 
 	var btn_confirm := Button.new()
-	btn_confirm.text = "ĐÓNG DẤU KHAI TRƯƠNG & ĐI CHỢ ĐẦU MỐI SÁNG SỚM ➔"
+	btn_confirm.text = "ĐÓNG DẤU KHAI TRƯƠNG & ĐI CHỢ ĐẦU MỐI SÁNG SỚM >>"
 	btn_confirm.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	btn_confirm.custom_minimum_size = Vector2(0, 48)
-	_apply_btn(btn_confirm, TEX_BTN_GREEN, 15)
+	btn_confirm.custom_minimum_size = Vector2(0, 54)
+	_apply_btn(btn_confirm, TEX_BTN_GREEN, 18)
 	btn_confirm.pressed.connect(func() -> void:
 		GameManager.complete_owner_setup(input_owner_name.text, input_store_name.text, selected_perk_id)
 	)
@@ -337,9 +343,9 @@ func _select_perk(perk_id: String) -> void:
 	for k in perk_buttons:
 		var b: Button = perk_buttons[k]
 		if k == perk_id:
-			_apply_btn(b, TEX_BTN_YELLOW, 12)
+			_apply_btn(b, TEX_BTN_YELLOW, 15)
 		else:
-			_apply_btn(b, TEX_BTN_CREAM, 12)
+			_apply_btn(b, TEX_BTN_CREAM, 15)
 
 func _update_live_preview() -> void:
 	var o_name: String = input_owner_name.text.strip_edges()

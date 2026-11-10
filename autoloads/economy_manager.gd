@@ -208,7 +208,7 @@ func buy_wholesale_pack(item_id: String, pack_size: int = 8) -> bool:
 
 	warehouse_stock[item_id] = warehouse_stock.get(item_id, 0) + pack_size
 	EventBus.inventory_updated.emit()
-	EventBus.toast_requested.emit("📦 Đã nhập +%d %s vào kho (-%s đ)!" % [pack_size, item.display_name, format_vnd(total_cost)], Color("#6B8E78"))
+	EventBus.toast_requested.emit("Đã nhập +%d %s vào kho (-%s đ)!" % [pack_size, item.display_name, format_vnd(total_cost)], Color("#6B8E78"))
 	return true
 
 func refill_candy_jar() -> bool:
@@ -218,7 +218,7 @@ func refill_candy_jar() -> bool:
 		return false
 	candy_jar += 10
 	EventBus.candy_jar_changed.emit(candy_jar)
-	EventBus.toast_requested.emit("🍬 Đã đổ thêm +10 viên kẹo vào hũ thu ngân!", Color("#E5A93C"))
+	EventBus.toast_requested.emit("Đã đổ thêm +10 viên kẹo vào hũ thu ngân!", Color("#E5A93C"))
 	return true
 
 func use_candy_for_change() -> bool:
@@ -257,7 +257,7 @@ func collect_debt(record_id: int) -> bool:
 			add_money(rec.amount)
 			add_reputation(2)
 			EventBus.debt_ledger_updated.emit()
-			EventBus.toast_requested.emit("✓ Đã thu nợ %s (%s đ) +2 ♥ Tình làng nghĩa xóm!" % [rec.customer_name, format_vnd(rec.amount)], Color("#6B8E78"))
+			EventBus.toast_requested.emit("Đã thu nợ %s (%s đ) +2 Tình làng nghĩa xóm!" % [rec.customer_name, format_vnd(rec.amount)], Color("#6B8E78"))
 			return true
 	return false
 

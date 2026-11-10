@@ -7,10 +7,10 @@ const GRID_ROWS: int = 5
 const CELL_SIZE := Vector2(71.7, 78.3)
 const GRID_ORIGIN := Vector2(435.0, 231.0)
 
-const ENTRY_POINT := Vector2(220.0, 675.0)
-const STORE_DOOR_SIDEWALK := Vector2(688.0, 672.0)
+const ENTRY_POINT := Vector2(220.0, 646.0)
+const STORE_DOOR_SIDEWALK := Vector2(688.0, 646.0)
 const CASHIER_POS := Vector2(618.0, 582.0)
-const EXIT_POINT := Vector2(1320.0, 675.0)
+const EXIT_POINT := Vector2(1280.0, 646.0)
 
 const INK_COLOR := Color("#2C221E")
 
@@ -255,7 +255,7 @@ func place_shelf_at(cell: Vector2i, furn_id: String, item_id: String, initial_st
 
 	if not is_free_starter:
 		GameManager.save_game()
-		EventBus.toast_requested.emit("🔨 Đã đặt %s! Chạm 1 lần để châm hàng, Chạm đúp (2 lần) để đổi món." % furn.display_name, Color("#6B8E78"))
+		EventBus.toast_requested.emit("Đã đặt %s! Chạm 1 lần để châm hàng, Chạm đúp (2 lần) để đổi món." % furn.display_name, Color("#6B8E78"))
 	return true
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -280,7 +280,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			for child in entities_container.get_children():
 				if child is CustomerEntity:
 					var cust: CustomerEntity = child as CustomerEntity
-					var hit_box := Rect2(cust.position + Vector2(-30, -85), Vector2(60, 90))
+					var hit_box := Rect2(cust.position + Vector2(-42, -95), Vector2(84, 110))
 					if hit_box.has_point(world_mouse):
 						cust.encourage_by_player()
 						return
@@ -301,7 +301,7 @@ func _unhandled_input(event: InputEvent) -> void:
 					shelf.cycle_assigned_item()
 					var item: ItemData = EconomyManager.item_catalog.get(shelf.item_id)
 					if item:
-						EventBus.toast_requested.emit("🔄 Đã đổi kệ sang bày bán: %s" % item.display_name, Color("#5B84B1"))
+						EventBus.toast_requested.emit("Đã đổi kệ sang bày bán: %s" % item.display_name, Color("#5B84B1"))
 				else:
 					shelf.restock_from_warehouse()
 		elif event.button_index == MOUSE_BUTTON_RIGHT:
@@ -310,7 +310,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				shelf.cycle_assigned_item()
 				var item: ItemData = EconomyManager.item_catalog.get(shelf.item_id)
 				if item:
-					EventBus.toast_requested.emit("🔄 Đã đổi kệ sang bày bán: %s" % item.display_name, Color("#5B84B1"))
+					EventBus.toast_requested.emit("Đã đổi kệ sang bày bán: %s" % item.display_name, Color("#5B84B1"))
 
 func _on_build_mode_toggled(active: bool, furn_id: String) -> void:
 	is_build_mode = active

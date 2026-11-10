@@ -86,7 +86,8 @@ func _make_btn_style(tex: Texture2D, modulate_col: Color = Color.WHITE) -> Style
 	return sb
 
 
-func _style_button(btn: Button, tex: Texture2D, font_size: int = 13) -> void:
+func _style_button(btn: Button, tex: Texture2D, font_size: int = 16) -> void:
+	btn.custom_minimum_size.y = maxf(btn.custom_minimum_size.y, 46.0)
 	btn.add_theme_stylebox_override("normal", _make_btn_style(tex, Color.WHITE))
 	btn.add_theme_stylebox_override("hover", _make_btn_style(tex, Color(1.06, 1.04, 0.98)))
 	btn.add_theme_stylebox_override("pressed", _make_btn_style(tex, Color(0.92, 0.9, 0.85)))
@@ -113,16 +114,16 @@ func _build_ui() -> void:
 
 	var main_margin := MarginContainer.new()
 	main_margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	main_margin.add_theme_constant_override("margin_left", 32)
-	main_margin.add_theme_constant_override("margin_right", 32)
-	main_margin.add_theme_constant_override("margin_top", 18)
-	main_margin.add_theme_constant_override("margin_bottom", 18)
+	main_margin.add_theme_constant_override("margin_left", 20)
+	main_margin.add_theme_constant_override("margin_right", 20)
+	main_margin.add_theme_constant_override("margin_top", 12)
+	main_margin.add_theme_constant_override("margin_bottom", 12)
 	add_child(main_margin)
 
 	var root_vbox := VBoxContainer.new()
 	root_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	root_vbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	root_vbox.add_theme_constant_override("separation", 12)
+	root_vbox.add_theme_constant_override("separation", 10)
 	main_margin.add_child(root_vbox)
 
 	# 1. Top Header
@@ -141,18 +142,18 @@ func _build_ui() -> void:
 
 	header_title_lbl = Label.new()
 	header_title_lbl.add_theme_color_override("font_color", Color(0.78, 0.29, 0.19))
-	header_title_lbl.add_theme_font_size_override("font_size", 19)
+	header_title_lbl.add_theme_font_size_override("font_size", 22)
 	title_vbox.add_child(header_title_lbl)
 
 	stats_lbl = Label.new()
 	stats_lbl.add_theme_color_override("font_color", Color(0.18, 0.45, 0.22))
-	stats_lbl.add_theme_font_size_override("font_size", 14)
+	stats_lbl.add_theme_font_size_override("font_size", 16)
 	title_vbox.add_child(stats_lbl)
 
 	feedback_lbl = Label.new()
-	feedback_lbl.text = "💾 Đã tự động lưu Sổ Cái cuối ngày."
+	feedback_lbl.text = "Đã tự động lưu Sổ Cái cuối ngày."
 	feedback_lbl.add_theme_color_override("font_color", Color(0.45, 0.26, 0.12))
-	feedback_lbl.add_theme_font_size_override("font_size", 13)
+	feedback_lbl.add_theme_font_size_override("font_size", 15)
 	top_hbox.add_child(feedback_lbl)
 
 	# 2. Center Split (Left: Diary + Financial Summary + Upgrade | Right: Neighbor Debt Book)
@@ -167,12 +168,12 @@ func _build_ui() -> void:
 	left_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	left_vbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	left_vbox.size_flags_stretch_ratio = 1.15
-	left_vbox.add_theme_constant_override("separation", 12)
+	left_vbox.add_theme_constant_override("separation", 10)
 	center_hbox.add_child(left_vbox)
 
 	# Story Vignette Card
 	var diary_card := PanelContainer.new()
-	diary_card.add_theme_stylebox_override("panel", _make_paper_box(Color("#FDF3D8"), Color("#C84B31"), 2, 18, 14))
+	diary_card.add_theme_stylebox_override("panel", _make_paper_box(Color("#FDF3D8"), Color("#C84B31"), 2, 18, 12))
 	left_vbox.add_child(diary_card)
 
 	var diary_vbox := VBoxContainer.new()
@@ -180,15 +181,15 @@ func _build_ui() -> void:
 	diary_card.add_child(diary_vbox)
 
 	var diary_hdr := Label.new()
-	diary_hdr.text = "🏮 NHẬT KÝ GÁC XÉP ĐÊM NAY"
+	diary_hdr.text = "NHẬT KÝ GÁC XÉP ĐÊM NAY"
 	diary_hdr.add_theme_color_override("font_color", Color(0.55, 0.18, 0.12))
-	diary_hdr.add_theme_font_size_override("font_size", 15)
+	diary_hdr.add_theme_font_size_override("font_size", 18)
 	diary_vbox.add_child(diary_hdr)
 
 	diary_lbl = Label.new()
 	diary_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	diary_lbl.add_theme_color_override("font_color", Color(0.24, 0.16, 0.1))
-	diary_lbl.add_theme_font_size_override("font_size", 14)
+	diary_lbl.add_theme_font_size_override("font_size", 16)
 	diary_vbox.add_child(diary_lbl)
 
 	# Financial & Customer Report Card
@@ -198,19 +199,19 @@ func _build_ui() -> void:
 	left_vbox.add_child(report_card)
 
 	var report_vbox := VBoxContainer.new()
-	report_vbox.add_theme_constant_override("separation", 10)
+	report_vbox.add_theme_constant_override("separation", 8)
 	report_card.add_child(report_vbox)
 
 	var rep_hdr := Label.new()
-	rep_hdr.text = "📊 KẾT SỔ THU CHI & LƯỢT KHÁCH TRONG NGÀY"
+	rep_hdr.text = "KẾT SỔ THU CHI & LƯỢT KHÁCH TRONG NGÀY"
 	rep_hdr.add_theme_color_override("font_color", Color(0.26, 0.17, 0.09))
-	rep_hdr.add_theme_font_size_override("font_size", 15)
+	rep_hdr.add_theme_font_size_override("font_size", 18)
 	report_vbox.add_child(rep_hdr)
 
 	finance_lbl = Label.new()
 	finance_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	finance_lbl.add_theme_color_override("font_color", Color(0.18, 0.42, 0.2))
-	finance_lbl.add_theme_font_size_override("font_size", 15)
+	finance_lbl.add_theme_font_size_override("font_size", 16)
 	report_vbox.add_child(finance_lbl)
 
 	var sep := HSeparator.new()
@@ -219,7 +220,7 @@ func _build_ui() -> void:
 	customer_stats_lbl = Label.new()
 	customer_stats_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	customer_stats_lbl.add_theme_color_override("font_color", Color(0.24, 0.17, 0.1))
-	customer_stats_lbl.add_theme_font_size_override("font_size", 14)
+	customer_stats_lbl.add_theme_font_size_override("font_size", 16)
 	report_vbox.add_child(customer_stats_lbl)
 
 	var upg_spacer := Control.new()
@@ -227,8 +228,8 @@ func _build_ui() -> void:
 	report_vbox.add_child(upg_spacer)
 
 	btn_upgrade = Button.new()
-	btn_upgrade.custom_minimum_size = Vector2(0, 42)
-	_style_button(btn_upgrade, TEX_BTN_YELLOW, 14)
+	btn_upgrade.custom_minimum_size = Vector2(0, 50)
+	_style_button(btn_upgrade, TEX_BTN_YELLOW, 16)
 	btn_upgrade.pressed.connect(func() -> void: GameManager.try_upgrade_store_level())
 	report_vbox.add_child(btn_upgrade)
 
@@ -247,9 +248,9 @@ func _build_ui() -> void:
 	right_card.add_child(right_vbox)
 
 	var debt_hdr := Label.new()
-	debt_hdr.text = "📓 SỔ NỢ HÀNG XÓM (NHẮC KHÉO CUỐI NGÀY)"
+	debt_hdr.text = "SỔ NỢ HÀNG XÓM (NHẮC KHÉO CUỐI NGÀY)"
 	debt_hdr.add_theme_color_override("font_color", Color(0.55, 0.18, 0.12))
-	debt_hdr.add_theme_font_size_override("font_size", 15)
+	debt_hdr.add_theme_font_size_override("font_size", 18)
 	right_vbox.add_child(debt_hdr)
 
 	var debt_scroll := ScrollContainer.new()
@@ -264,7 +265,7 @@ func _build_ui() -> void:
 
 	# 3. Bottom Navigation Bar
 	var bottom_panel := PanelContainer.new()
-	bottom_panel.add_theme_stylebox_override("panel", _make_card_style(TEX_CARD_BROWN, 16, 10))
+	bottom_panel.add_theme_stylebox_override("panel", _make_card_style(TEX_CARD_BROWN, 16, 8))
 	root_vbox.add_child(bottom_panel)
 
 	var bottom_hbox := HBoxContainer.new()
@@ -272,9 +273,9 @@ func _build_ui() -> void:
 	bottom_panel.add_child(bottom_hbox)
 
 	var btn_menu := Button.new()
-	btn_menu.text = "📖 Lưu & Về Bìa Sổ Ký Ức (Menu Chính)"
-	btn_menu.custom_minimum_size = Vector2(280, 44)
-	_style_button(btn_menu, TEX_BTN_CREAM, 14)
+	btn_menu.text = "<< Lưu & Về Bìa Sổ Ký Ức (Menu Chính)"
+	btn_menu.custom_minimum_size = Vector2(340, 52)
+	_style_button(btn_menu, TEX_BTN_CREAM, 16)
 	btn_menu.pressed.connect(func() -> void:
 		GameManager.save_game()
 		GameManager.change_to_phase_scene(GameManager.StorePhase.STORY_INTRO)
@@ -286,9 +287,9 @@ func _build_ui() -> void:
 	bottom_hbox.add_child(spacer)
 
 	var btn_next_day := Button.new()
-	btn_next_day.text = "🌅 Đi Ngủ & Sáng Mai Đi Chợ Sỉ (Qua Ngày %d) ➔" % (GameManager.current_day + 1)
-	btn_next_day.custom_minimum_size = Vector2(360, 44)
-	_style_button(btn_next_day, TEX_BTN_GREEN, 15)
+	btn_next_day.text = "Đi Ngủ & Sáng Mai Đi Chợ Sỉ (Qua Ngày %d) >>" % (GameManager.current_day + 1)
+	btn_next_day.custom_minimum_size = Vector2(440, 52)
+	_style_button(btn_next_day, TEX_BTN_GREEN, 17)
 	btn_next_day.pressed.connect(func() -> void: GameManager.start_next_day())
 	bottom_hbox.add_child(btn_next_day)
 
@@ -298,12 +299,12 @@ func _refresh_all() -> void:
 	var cfg: Dictionary = GameManager.level_configs[lvl]
 
 	if header_title_lbl:
-		header_title_lbl.text = "🌙 21:00 TỐI NGÀY %d — KHÉP CỬA VỀ NHÀ & KẾT SỔ [%s]" % [
+		header_title_lbl.text = "21:00 TỐI NGÀY %d — KHÉP CỬA VỀ NHÀ & KẾT SỔ [%s]" % [
 			GameManager.current_day,
 			GameManager.store_name
 		]
 	if stats_lbl:
-		stats_lbl.text = "👤 Chủ tiệm: %s  |  💰 Vốn hiện có: %s đ  |  ♥ Tình làng xóm: %d  |  🎨 %s" % [
+		stats_lbl.text = "Chủ tiệm: %s  |  Vốn hiện có: %s đ  |  Tình làng xóm: %d  |  %s" % [
 			GameManager.player_name,
 			EconomyManager.format_vnd(EconomyManager.money),
 			EconomyManager.reputation,
@@ -317,7 +318,7 @@ func _refresh_all() -> void:
 		finance_lbl.text = (
 			"- Doanh thu bán lẻ & trà đá hôm nay: +%s đ\n" % EconomyManager.format_vnd(GameManager.daily_revenue)
 			+ "- Chi phí nhập hàng sỉ & mua kẹo: -%s đ\n" % EconomyManager.format_vnd(GameManager.daily_spent)
-			+ "➔ CHÊNH LỆCH THU CHI TRONG NGÀY: %s%s đ" % [net_prefix, EconomyManager.format_vnd(net)]
+			+ "-> CHÊNH LỆCH THU CHI TRONG NGÀY: %s%s đ" % [net_prefix, EconomyManager.format_vnd(net)]
 		)
 	if customer_stats_lbl:
 		customer_stats_lbl.text = (
@@ -329,14 +330,14 @@ func _refresh_all() -> void:
 	if btn_upgrade:
 		if lvl < 4:
 			btn_upgrade.disabled = false
-			btn_upgrade.text = "🎨 Tô Màu Mở Rộng Cấp %d (%s đ & %d ♥)" % [
+			btn_upgrade.text = "Tô Màu Mở Rộng Cấp %d (%s đ & %d Tình làng)" % [
 				lvl + 1,
 				EconomyManager.format_vnd(int(cfg["upgrade_cost"])),
 				int(cfg["rep_required"])
 			]
 		else:
 			btn_upgrade.disabled = true
-			btn_upgrade.text = "✨ Đã Tô Màu Trọn Vẹn Khu Phố Ký Ức!"
+			btn_upgrade.text = "Đã Tô Màu Trọn Vẹn Khu Phố Ký Ức!"
 	_refresh_debt_list()
 
 
@@ -362,7 +363,7 @@ func _refresh_debt_list() -> void:
 		var lbl := Label.new()
 		lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		lbl.text = "📌 %s (%s) — Ngày %d\n%s — Nợ: %s đ" % [
+		lbl.text = "%s (%s) — Ngày %d\n%s — Nợ: %s đ" % [
 			rec.customer_name,
 			rec.customer_role,
 			rec.day_borrowed,
@@ -370,7 +371,7 @@ func _refresh_debt_list() -> void:
 			EconomyManager.format_vnd(rec.amount)
 		]
 		lbl.add_theme_color_override("font_color", Color(0.24, 0.14, 0.08))
-		lbl.add_theme_font_size_override("font_size", 13)
+		lbl.add_theme_font_size_override("font_size", 15)
 		row.add_child(lbl)
 
 		var rid: int = rec.record_id
@@ -378,7 +379,8 @@ func _refresh_debt_list() -> void:
 		btn_collect.text = "Thu Nợ (+2)"
 		btn_collect.icon = ICON_HEART
 		btn_collect.expand_icon = true
-		_style_button(btn_collect, TEX_BTN_GREEN, 12)
+		btn_collect.custom_minimum_size = Vector2(130, 44)
+		_style_button(btn_collect, TEX_BTN_GREEN, 15)
 		btn_collect.pressed.connect(func() -> void:
 			EconomyManager.collect_debt(rid)
 			GameManager.save_game()
@@ -389,9 +391,9 @@ func _refresh_debt_list() -> void:
 	if unpaid_count == 0:
 		var empty_lbl := Label.new()
 		empty_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		empty_lbl.text = "✨ Sổ nợ sạch trơn! Bà con lối xóm đều đã thanh toán đầy đủ."
+		empty_lbl.text = "Sổ nợ sạch trơn! Bà con lối xóm đều đã thanh toán đầy đủ."
 		empty_lbl.add_theme_color_override("font_color", Color(0.22, 0.45, 0.24))
-		empty_lbl.add_theme_font_size_override("font_size", 14)
+		empty_lbl.add_theme_font_size_override("font_size", 16)
 		debt_vbox.add_child(empty_lbl)
 
 

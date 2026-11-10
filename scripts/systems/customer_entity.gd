@@ -96,14 +96,14 @@ func setup_customer(
 			state = State.STROLLING_SIDEWALK
 			move_speed = 78.0
 			mood_text = "Đi dạo ngang ngõ..."
-			waypoints = [Vector2(620.0, 678.0), exit_point]
+			waypoints = [Vector2(620.0, 646.0), exit_point]
 		"tea_break":
 			state = State.SITTING_AT_TEA_TABLE
 			move_speed = 85.0
 			tea_timer = randf_range(5.0, 7.5)
 			mood_text = "Ghé uống trà đá..."
 			var seat_pos := Vector2(280.0, 548.0) if randf() < 0.5 else Vector2(395.0, 548.0)
-			waypoints = [ Vector2(335.0, 668.0), seat_pos ]
+			waypoints = [ Vector2(335.0, 646.0), seat_pos ]
 		_:
 			state = State.WALKING_TO_SHELF
 			move_speed = 102.0 if GameManager.is_rush_hour else 88.0
@@ -128,16 +128,16 @@ func _process(delta: float) -> void:
 			if not waypoints.is_empty():
 				_move_along_waypoints(sim_delta)
 			else:
-				mood_text = "Trà đá mát ruột! 🍵"
+				mood_text = "Trà đá mát ruột!"
 				tea_timer -= sim_delta
 				if tea_timer <= 0.0:
 					EconomyManager.add_money(2000)
 					EconomyManager.add_reputation(1)
-					EventBus.toast_requested.emit("🍵 %s trả 2.000đ tiền trà đá gốc đa (+1 ♥)!" % customer_name, SAGE_GREEN)
+					EventBus.toast_requested.emit("%s trả 2.000đ tiền trà đá gốc đa (+1 Tình làng)!" % customer_name, SAGE_GREEN)
 					if is_instance_valid(target_shelf) and (is_greeted or randf() < 0.65):
 						mood_text = "Tiện ghé mua đồ!"
 						state = State.WALKING_TO_SHELF
-						waypoints = [Vector2(335.0, 672.0)] + shelf_waypoints.duplicate()
+						waypoints = [Vector2(335.0, 646.0)] + shelf_waypoints.duplicate()
 					else:
 						mood_text = "+2.000đ Trà đá"
 						_start_leaving()
@@ -189,8 +189,8 @@ func _move_along_waypoints(delta: float) -> bool:
 
 func _start_leaving() -> void:
 	state = State.LEAVING
-	# Luôn bước xuống vỉa hè (y = 675) ở phía bên phải Quầy Thu Ngân (x >= 640) rồi mới đi bộ ra khỏi ngõ
-	var sidewalk_step := Vector2(maxf(position.x, 650.0), 675.0)
+	# Luôn bước xuống vỉa hè (y = 646) ở phía bên phải Quầy Thu Ngân (x >= 640) rồi mới đi bộ ra khỏi ngõ
+	var sidewalk_step := Vector2(maxf(position.x, 650.0), 646.0)
 	waypoints = [sidewalk_step, exit_point]
 
 func _decide_to_enter_store_from_sidewalk() -> void:
@@ -207,12 +207,12 @@ func encourage_by_player() -> void:
 	patience_left = min(patience_max, patience_left + 8.0)
 	if state == State.STROLLING_SIDEWALK:
 		_decide_to_enter_store_from_sidewalk()
-		EventBus.toast_requested.emit("👋 Bạn tươi cười chào hỏi — %s liền rẽ vào tiệm xem hàng!" % customer_name, SAGE_GREEN)
+		EventBus.toast_requested.emit("Bạn tươi cười chào hỏi — %s liền rẽ vào tiệm xem hàng!" % customer_name, SAGE_GREEN)
 	elif state == State.BROWSING_AT_SHELF:
 		mood_text = "Bà chủ niềm nở quá!"
-		EventBus.toast_requested.emit("💬 Bạn tư vấn nhiệt tình khiến %s rất ưng ý!" % customer_name, SAGE_GREEN)
+		EventBus.toast_requested.emit("Bạn tư vấn nhiệt tình khiến %s rất ưng ý!" % customer_name, SAGE_GREEN)
 	elif state == State.WAITING_AT_CASHIER:
-		EventBus.toast_requested.emit("💬 Bạn xin lỗi khách chờ một lát — %s kiên nhẫn đứng đợi thêm!" % customer_name, SAGE_GREEN)
+		EventBus.toast_requested.emit("Bạn xin lỗi khách chờ một lát — %s kiên nhẫn đứng đợi thêm!" % customer_name, SAGE_GREEN)
 	queue_redraw()
 
 func _evaluate_psychology_at_shelf() -> void:
@@ -222,7 +222,7 @@ func _evaluate_psychology_at_shelf() -> void:
 		mood_color = STAMP_RED
 		EconomyManager.add_reputation(-1)
 		GameManager.daily_customers_left += 1
-		EventBus.toast_requested.emit("💭 %s lắc đầu bỏ về vì kệ đã hết sạch hàng (-1 ♥)!" % customer_name, STAMP_RED)
+		EventBus.toast_requested.emit("%s lắc đầu bỏ về vì kệ đã hết sạch hàng (-1 Tình làng)!" % customer_name, STAMP_RED)
 		_start_leaving()
 		return
 
@@ -252,11 +252,11 @@ func _evaluate_psychology_at_shelf() -> void:
 			GameManager.daily_customers_left += 1
 			if price_ratio >= 1.4:
 				EconomyManager.add_reputation(-1)
-				EventBus.toast_requested.emit("💸 %s chê %s bán giá quá đắt (%sđ) nên bỏ về (-1 ♥)!" % [
+				EventBus.toast_requested.emit("%s chê %s bán giá quá đắt (%sđ) nên bỏ về (-1 Tình làng)!" % [
 					customer_name, item.display_name, EconomyManager.format_vnd(item.retail_price)
 				], STAMP_RED)
 			else:
-				EventBus.toast_requested.emit("💭 %s thấy %s hơi đắt (%sđ) nên đặt xuống không mua." % [
+				EventBus.toast_requested.emit("%s thấy %s hơi đắt (%sđ) nên đặt xuống không mua." % [
 					customer_name, item.display_name, EconomyManager.format_vnd(item.retail_price)
 				], Color("#D96B43"))
 			_start_leaving()
@@ -279,7 +279,7 @@ func _evaluate_psychology_at_shelf() -> void:
 		]
 		mood_text = excuses.pick_random()
 		mood_color = Color("#7A5C48")
-		EventBus.toast_requested.emit("👀 %s đứng ngắm %s một hồi rồi đổi ý chưa mua hôm nay." % [customer_name, item.display_name], Color("#7A5C48"))
+		EventBus.toast_requested.emit("%s đứng ngắm %s một hồi rồi đổi ý chưa mua hôm nay." % [customer_name, item.display_name], Color("#7A5C48"))
 		_start_leaving()
 		return
 
@@ -331,7 +331,7 @@ func _abandon_queue_and_leave() -> void:
 	mood_color = STAMP_RED
 	EconomyManager.add_reputation(-2)
 	GameManager.daily_customers_left += 1
-	EventBus.toast_requested.emit("💢 %s đợi tính tiền quá lâu nên đã trả lại hàng và bỏ về (-2 ♥)!" % customer_name, STAMP_RED)
+	EventBus.toast_requested.emit("%s đợi tính tiền quá lâu nên đã trả lại hàng và bỏ về (-2 Tình làng)!" % customer_name, STAMP_RED)
 	_start_leaving()
 	EventBus.checkout_resolved.emit(self, "abandoned")
 
@@ -352,9 +352,9 @@ func complete_checkout(method: String) -> void:
 			if EconomyManager.use_candy_for_change():
 				EconomyManager.add_money(total_bill)
 				EconomyManager.add_reputation(2)
-				mood_text = "Thích kẹo +2♥"
+				mood_text = "Thích kẹo +2"
 				mood_color = Color("#D96B43")
-				EventBus.toast_requested.emit("🍬 %s rất vui khi được thối thêm kẹo (+2 ♥)!" % customer_name, Color("#E5A93C"))
+				EventBus.toast_requested.emit("%s rất vui khi được thối thêm kẹo (+2 Tình làng)!" % customer_name, Color("#E5A93C"))
 			else:
 				EconomyManager.add_money(total_bill)
 				mood_text = "+%sđ" % EconomyManager.format_vnd(total_bill)
@@ -368,9 +368,9 @@ func complete_checkout(method: String) -> void:
 				shirt_color
 			)
 			EconomyManager.add_reputation(3)
-			mood_text = "Cảm ơn bà chủ +3♥"
+			mood_text = "Cảm ơn bà chủ +3"
 			mood_color = SAGE_GREEN
-			EventBus.toast_requested.emit("📓 Đã ghi sổ nợ cho %s (%s đ) +3 ♥ Tình làng nghĩa xóm!" % [customer_name, EconomyManager.format_vnd(total_bill)], SAGE_GREEN)
+			EventBus.toast_requested.emit("Đã ghi sổ nợ cho %s (%s đ) +3 Tình làng nghĩa xóm!" % [customer_name, EconomyManager.format_vnd(total_bill)], SAGE_GREEN)
 
 	GameManager.daily_customers_served += 1
 	_start_leaving()
@@ -404,7 +404,7 @@ func _draw() -> void:
 		draw_rect(bar_fg, p_col, true)
 		draw_rect(bar_bg, INK_COLOR, false, 1.0)
 
-	# 4. Vẽ Bong Bóng Thoại & Tâm Lý trên đầu (Tối ưu chống đè chữ khi xếp hàng!)
+	# 4. Vẽ Bong Bóng Thoại & Tâm Lý trên đầu (To rõ chuẩn Mobile 14px, Icon 22x22)
 	var item: ItemData = EconomyManager.item_catalog.get(wanted_item_id)
 	var icon_to_draw: Texture2D = null
 	var badge_text: String = ""
@@ -413,7 +413,7 @@ func _draw() -> void:
 		State.STROLLING_SIDEWALK:
 			badge_text = "Ngó tiệm..."
 		State.SITTING_AT_TEA_TABLE:
-			badge_text = "Uống trà đá 🍵" if waypoints.is_empty() else "Ghé trà đá..."
+			badge_text = "Uống trà đá" if waypoints.is_empty() else "Ghé trà đá..."
 		State.WALKING_TO_SHELF:
 			if item != null:
 				icon_to_draw = item.icon
@@ -442,10 +442,10 @@ func _draw() -> void:
 		var font: Font = ThemeDB.fallback_font
 		var b_rect: Rect2
 		if badge_text == "":
-			b_rect = Rect2(-22, -116 + bob, 44, 32)
+			b_rect = Rect2(-24, -120 + bob, 48, 36)
 		else:
-			var text_w: float = max(68.0, float(badge_text.length()) * 6.2 + (26.0 if icon_to_draw != null else 14.0))
-			b_rect = Rect2(-text_w * 0.5, -116 + bob, text_w, 32)
+			var text_w: float = max(84.0, float(badge_text.length()) * 7.8 + (32.0 if icon_to_draw != null else 18.0))
+			b_rect = Rect2(-text_w * 0.5, -120 + bob, text_w, 36)
 
 		if tex_bubble != null:
 			draw_texture_rect(tex_bubble, b_rect, false)
@@ -454,18 +454,18 @@ func _draw() -> void:
 			draw_rect(b_rect, INK_COLOR, false, 1.5)
 
 		if badge_text == "" and icon_to_draw != null:
-			draw_texture_rect(icon_to_draw, Rect2(-11, -111 + bob, 22, 20), false)
+			draw_texture_rect(icon_to_draw, Rect2(-12, -114 + bob, 24, 22), false)
 		else:
-			var text_x: float = b_rect.position.x + 8.0
+			var text_x: float = b_rect.position.x + 10.0
 			if icon_to_draw != null:
-				draw_texture_rect(icon_to_draw, Rect2(b_rect.position.x + 6, b_rect.position.y + 5, 18, 18), false)
-				text_x = b_rect.position.x + 26.0
+				draw_texture_rect(icon_to_draw, Rect2(b_rect.position.x + 6, b_rect.position.y + 5, 22, 22), false)
+				text_x = b_rect.position.x + 31.0
 			draw_string(
 				font,
-				Vector2(text_x, b_rect.position.y + 19),
+				Vector2(text_x, b_rect.position.y + 22),
 				badge_text,
 				HORIZONTAL_ALIGNMENT_LEFT,
 				-1,
-				10,
+				14,
 				mood_color if state == State.LEAVING else INK_COLOR
 			)

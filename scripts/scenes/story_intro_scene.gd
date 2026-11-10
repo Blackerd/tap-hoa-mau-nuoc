@@ -31,7 +31,7 @@ var story_pages: Array[Dictionary] = [
 	},
 	{
 		"heading": "Trang 2/3 — Chiếc Quầy Gỗ & Cuốn Sổ Cái Ố Vàng",
-		"body": "Mở cánh cửa gỗ khép hờ, trên bàn thu ngân vẫn còn nguyên hũ thủy tinh đựng kẹo lẻ dùng để thối tiền và cuốn Sổ Ghi Nợ ố vàng ghi những dòng chữ thân thương của Bác Tư, Cô Hoa, Anh Tuấn...\n\nỞ con ngõ nhỏ này, người ta mua bán không chỉ bằng tiền mặt, mà còn bằng cả Tình Làng Nghĩa Xóm (♥).",
+		"body": "Mở cánh cửa gỗ khép hờ, trên bàn thu ngân vẫn còn nguyên hũ thủy tinh đựng kẹo lẻ dùng để thối tiền và cuốn Sổ Ghi Nợ ố vàng ghi những dòng chữ thân thương của Bác Tư, Cô Hoa, Anh Tuấn...\n\nỞ con ngõ nhỏ này, người ta mua bán không chỉ bằng tiền mặt, mà còn bằng cả Tình Làng Nghĩa Xóm.",
 		"tex": TEX_UNCLE
 	},
 	{
@@ -76,8 +76,8 @@ func _style_tex_button(tex: Texture2D, modulate_col: Color = Color.WHITE) -> Sty
 	sbt.content_margin_bottom = 8
 	return sbt
 
-func _apply_btn(btn: Button, tex: Texture2D, f_size: int = 14) -> void:
-	btn.custom_minimum_size.y = maxf(btn.custom_minimum_size.y, 42.0)
+func _apply_btn(btn: Button, tex: Texture2D, f_size: int = 17) -> void:
+	btn.custom_minimum_size.y = maxf(btn.custom_minimum_size.y, 50.0)
 	btn.add_theme_stylebox_override("normal", _style_tex_button(tex, Color.WHITE))
 	btn.add_theme_stylebox_override("hover", _style_tex_button(tex, Color(1.06, 1.04, 1.0, 1.0)))
 	btn.add_theme_stylebox_override("pressed", _style_tex_button(tex, Color(0.92, 0.89, 0.85, 1.0)))
@@ -102,10 +102,10 @@ func _build_ui() -> void:
 
 	var safe_margin := MarginContainer.new()
 	safe_margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	safe_margin.add_theme_constant_override("margin_left", 48)
-	safe_margin.add_theme_constant_override("margin_right", 48)
-	safe_margin.add_theme_constant_override("margin_top", 28)
-	safe_margin.add_theme_constant_override("margin_bottom", 28)
+	safe_margin.add_theme_constant_override("margin_left", 24)
+	safe_margin.add_theme_constant_override("margin_right", 24)
+	safe_margin.add_theme_constant_override("margin_top", 14)
+	safe_margin.add_theme_constant_override("margin_bottom", 14)
 	add_child(safe_margin)
 
 	var center_box := CenterContainer.new()
@@ -114,8 +114,8 @@ func _build_ui() -> void:
 	safe_margin.add_child(center_box)
 
 	var main_card := PanelContainer.new()
-	main_card.custom_minimum_size = Vector2(880, 560)
-	main_card.add_theme_stylebox_override("panel", _style_tex_panel(TEX_CARD_BROWN, 38, 30))
+	main_card.custom_minimum_size = Vector2(1160, 650)
+	main_card.add_theme_stylebox_override("panel", _style_tex_panel(TEX_CARD_BROWN, 36, 26))
 	center_box.add_child(main_card)
 
 	var vbox := VBoxContainer.new()
@@ -124,17 +124,17 @@ func _build_ui() -> void:
 
 	# Tiêu đề Game
 	var title := Label.new()
-	title.text = "🎨 TẠP HÓA MÀU NƯỚC — KÝ ỨC ĐẦU NGÕ"
+	title.text = "TẠP HÓA MÀU NƯỚC — KÝ ỨC ĐẦU NGÕ"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_color_override("font_color", STAMP_RED)
-	title.add_theme_font_size_override("font_size", 26)
+	title.add_theme_font_size_override("font_size", 30)
 	vbox.add_child(title)
 
 	var subtitle := Label.new()
 	subtitle.text = "Game Quản Lý Tiệm Tạp Hóa & Nhịp Sống Xóm Nhỏ (Style 8: Bút Mực & Màu Nước)"
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	subtitle.add_theme_color_override("font_color", SAGE_GREEN.darkened(0.25))
-	subtitle.add_theme_font_size_override("font_size", 14)
+	subtitle.add_theme_font_size_override("font_size", 17)
 	vbox.add_child(subtitle)
 
 	# Khung Sổ Cốt Truyện Mở Đầu (Có lật trang 1/3 -> 3/3)
@@ -145,32 +145,32 @@ func _build_ui() -> void:
 	sp_sb.border_color = INK_DARK
 	sp_sb.set_border_width_all(2)
 	sp_sb.set_corner_radius_all(10)
-	sp_sb.content_margin_left = 22
-	sp_sb.content_margin_right = 22
-	sp_sb.content_margin_top = 18
-	sp_sb.content_margin_bottom = 18
+	sp_sb.content_margin_left = 26
+	sp_sb.content_margin_right = 26
+	sp_sb.content_margin_top = 20
+	sp_sb.content_margin_bottom = 20
 	story_panel.add_theme_stylebox_override("panel", sp_sb)
 	vbox.add_child(story_panel)
 
 	var story_hbox := HBoxContainer.new()
-	story_hbox.add_theme_constant_override("separation", 24)
+	story_hbox.add_theme_constant_override("separation", 28)
 	story_panel.add_child(story_hbox)
 
 	# Cột trái: Minh họa bức tranh Tiệm Bà Ba + Nhân vật
 	var art_vbox := VBoxContainer.new()
 	art_vbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	art_vbox.add_theme_constant_override("separation", 8)
+	art_vbox.add_theme_constant_override("separation", 12)
 	story_hbox.add_child(art_vbox)
 
 	var mini_painting := TextureRect.new()
 	mini_painting.texture = TEX_BG_SKETCH
-	mini_painting.custom_minimum_size = Vector2(240, 145)
+	mini_painting.custom_minimum_size = Vector2(300, 180)
 	mini_painting.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	mini_painting.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	art_vbox.add_child(mini_painting)
 
 	story_portrait = TextureRect.new()
-	story_portrait.custom_minimum_size = Vector2(96, 110)
+	story_portrait.custom_minimum_size = Vector2(120, 140)
 	story_portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	story_portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	art_vbox.add_child(story_portrait)
@@ -179,12 +179,12 @@ func _build_ui() -> void:
 	var text_vbox := VBoxContainer.new()
 	text_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	text_vbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	text_vbox.add_theme_constant_override("separation", 10)
+	text_vbox.add_theme_constant_override("separation", 14)
 	story_hbox.add_child(text_vbox)
 
 	lbl_story_heading = Label.new()
 	lbl_story_heading.add_theme_color_override("font_color", STAMP_RED)
-	lbl_story_heading.add_theme_font_size_override("font_size", 17)
+	lbl_story_heading.add_theme_font_size_override("font_size", 22)
 	text_vbox.add_child(lbl_story_heading)
 
 	lbl_story_body = Label.new()
@@ -192,17 +192,18 @@ func _build_ui() -> void:
 	lbl_story_body.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	lbl_story_body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lbl_story_body.add_theme_color_override("font_color", INK_DARK)
-	lbl_story_body.add_theme_font_size_override("font_size", 14)
+	lbl_story_body.add_theme_font_size_override("font_size", 18)
 	text_vbox.add_child(lbl_story_body)
 
 	var page_nav_row := HBoxContainer.new()
 	page_nav_row.alignment = BoxContainer.ALIGNMENT_END
-	page_nav_row.add_theme_constant_override("separation", 10)
+	page_nav_row.add_theme_constant_override("separation", 14)
 	text_vbox.add_child(page_nav_row)
 
 	btn_prev_page = Button.new()
-	btn_prev_page.text = "◀ Trang trước"
-	_apply_btn(btn_prev_page, TEX_BTN_CREAM, 12)
+	btn_prev_page.text = "<< Trang trước"
+	btn_prev_page.custom_minimum_size = Vector2(165, 48)
+	_apply_btn(btn_prev_page, TEX_BTN_CREAM, 16)
 	btn_prev_page.pressed.connect(func() -> void:
 		current_page = maxi(0, current_page - 1)
 		_refresh_story_page()
@@ -211,12 +212,13 @@ func _build_ui() -> void:
 
 	lbl_page_indicator = Label.new()
 	lbl_page_indicator.add_theme_color_override("font_color", INK_DARK)
-	lbl_page_indicator.add_theme_font_size_override("font_size", 13)
+	lbl_page_indicator.add_theme_font_size_override("font_size", 17)
 	page_nav_row.add_child(lbl_page_indicator)
 
 	btn_next_page = Button.new()
-	btn_next_page.text = "Trang tiếp ▶"
-	_apply_btn(btn_next_page, TEX_BTN_CREAM, 12)
+	btn_next_page.text = "Trang tiếp >>"
+	btn_next_page.custom_minimum_size = Vector2(165, 48)
+	_apply_btn(btn_next_page, TEX_BTN_CREAM, 16)
 	btn_next_page.pressed.connect(func() -> void:
 		current_page = mini(story_pages.size() - 1, current_page + 1)
 		_refresh_story_page()
@@ -226,7 +228,7 @@ func _build_ui() -> void:
 	# Dòng Nút Hành Động Chính (Tiếp Tục Save Cũ hoặc Khai Trương Quán Mới)
 	var action_row := HBoxContainer.new()
 	action_row.alignment = BoxContainer.ALIGNMENT_CENTER
-	action_row.add_theme_constant_override("separation", 14)
+	action_row.add_theme_constant_override("separation", 18)
 	vbox.add_child(action_row)
 
 	var save_info: Dictionary = GameManager.get_save_summary()
@@ -237,18 +239,18 @@ func _build_ui() -> void:
 		var s_money: int = int(save_info.get("money", 45000))
 
 		var btn_continue := Button.new()
-		btn_continue.text = "▶ Tiếp Tục: %s (%s — Ngày %d | %s đ)" % [
+		btn_continue.text = "Tiếp Tục: %s (%s — Ngày %d | %s đ) >>" % [
 			s_store, s_owner, s_day, EconomyManager.format_vnd(s_money)
 		]
-		btn_continue.custom_minimum_size = Vector2(420, 48)
-		_apply_btn(btn_continue, TEX_BTN_GREEN, 14)
+		btn_continue.custom_minimum_size = Vector2(510, 56)
+		_apply_btn(btn_continue, TEX_BTN_GREEN, 17)
 		btn_continue.pressed.connect(func() -> void: GameManager.continue_saved_game())
 		action_row.add_child(btn_continue)
 
 	var btn_new_game := Button.new()
-	btn_new_game.text = "📝 Khai Trương Tiệm Mới (Đặt Tên Chủ & Tên Quán)"
-	btn_new_game.custom_minimum_size = Vector2(360, 48)
-	_apply_btn(btn_new_game, TEX_BTN_YELLOW, 14)
+	btn_new_game.text = "Khai Trương Tiệm Mới (Đặt Tên Chủ & Tên Quán) >>"
+	btn_new_game.custom_minimum_size = Vector2(490, 56)
+	_apply_btn(btn_new_game, TEX_BTN_YELLOW, 18)
 	btn_new_game.pressed.connect(func() -> void: GameManager.begin_new_game_onboarding())
 	action_row.add_child(btn_new_game)
 

@@ -91,7 +91,8 @@ func _make_btn_style(tex: Texture2D, modulate_col: Color = Color.WHITE) -> Style
 	return sb
 
 
-func _style_button(btn: Button, tex: Texture2D, font_size: int = 13) -> void:
+func _style_button(btn: Button, tex: Texture2D, font_size: int = 15) -> void:
+	btn.custom_minimum_size.y = maxf(btn.custom_minimum_size.y, 40.0)
 	btn.add_theme_stylebox_override("normal", _make_btn_style(tex, Color.WHITE))
 	btn.add_theme_stylebox_override("hover", _make_btn_style(tex, Color(1.06, 1.04, 0.98)))
 	btn.add_theme_stylebox_override("pressed", _make_btn_style(tex, Color(0.92, 0.9, 0.85)))
@@ -103,19 +104,19 @@ func _style_button(btn: Button, tex: Texture2D, font_size: int = 13) -> void:
 
 func _make_icon_stat(parent: BoxContainer, tex: Texture2D, color: Color) -> Label:
 	var h := HBoxContainer.new()
-	h.add_theme_constant_override("separation", 5)
+	h.add_theme_constant_override("separation", 6)
 	parent.add_child(h)
 
 	var ir := TextureRect.new()
 	ir.texture = tex
-	ir.custom_minimum_size = Vector2(20, 20)
+	ir.custom_minimum_size = Vector2(24, 24)
 	ir.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	ir.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	h.add_child(ir)
 
 	var lbl := Label.new()
 	lbl.add_theme_color_override("font_color", color)
-	lbl.add_theme_font_size_override("font_size", 13)
+	lbl.add_theme_font_size_override("font_size", 16)
 	h.add_child(lbl)
 	return lbl
 
@@ -136,16 +137,16 @@ func _build_ui() -> void:
 
 	var main_margin := MarginContainer.new()
 	main_margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	main_margin.add_theme_constant_override("margin_left", 28)
-	main_margin.add_theme_constant_override("margin_right", 28)
-	main_margin.add_theme_constant_override("margin_top", 14)
-	main_margin.add_theme_constant_override("margin_bottom", 14)
+	main_margin.add_theme_constant_override("margin_left", 18)
+	main_margin.add_theme_constant_override("margin_right", 18)
+	main_margin.add_theme_constant_override("margin_top", 10)
+	main_margin.add_theme_constant_override("margin_bottom", 10)
 	add_child(main_margin)
 
 	var root_vbox := VBoxContainer.new()
 	root_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	root_vbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	root_vbox.add_theme_constant_override("separation", 10)
+	root_vbox.add_theme_constant_override("separation", 8)
 	main_margin.add_child(root_vbox)
 
 	# 1. Top Header Bar
@@ -168,23 +169,23 @@ func _build_ui() -> void:
 
 	var clk_icon := TextureRect.new()
 	clk_icon.texture = ICON_CLOCK
-	clk_icon.custom_minimum_size = Vector2(24, 24)
+	clk_icon.custom_minimum_size = Vector2(28, 28)
 	clk_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	clk_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	hdr_row.add_child(clk_icon)
 
 	header_title_lbl = Label.new()
 	header_title_lbl.add_theme_color_override("font_color", Color(0.78, 0.29, 0.19))
-	header_title_lbl.add_theme_font_size_override("font_size", 18)
+	header_title_lbl.add_theme_font_size_override("font_size", 21)
 	hdr_row.add_child(header_title_lbl)
 
 	var stats_row := HBoxContainer.new()
-	stats_row.add_theme_constant_override("separation", 18)
+	stats_row.add_theme_constant_override("separation", 20)
 	title_vbox.add_child(stats_row)
 
 	lbl_owner_val = Label.new()
 	lbl_owner_val.add_theme_color_override("font_color", Color(0.24, 0.16, 0.08))
-	lbl_owner_val.add_theme_font_size_override("font_size", 13)
+	lbl_owner_val.add_theme_font_size_override("font_size", 16)
 	stats_row.add_child(lbl_owner_val)
 
 	lbl_money_val = _make_icon_stat(stats_row, ICON_MONEY, Color(0.18, 0.45, 0.22))
@@ -193,8 +194,8 @@ func _build_ui() -> void:
 
 	var btn_menu := Button.new()
 	btn_menu.text = "Bìa Sổ Ký Ức (Menu)"
-	btn_menu.custom_minimum_size = Vector2(185, 38)
-	_style_button(btn_menu, TEX_BTN_CREAM, 13)
+	btn_menu.custom_minimum_size = Vector2(215, 48)
+	_style_button(btn_menu, TEX_BTN_CREAM, 16)
 	btn_menu.pressed.connect(func() -> void:
 		GameManager.save_game()
 		GameManager.change_to_phase_scene(GameManager.StorePhase.STORY_INTRO)
@@ -217,7 +218,7 @@ func _build_ui() -> void:
 
 	weather_icon_rect = TextureRect.new()
 	weather_icon_rect.texture = ICON_SUN
-	weather_icon_rect.custom_minimum_size = Vector2(36, 36)
+	weather_icon_rect.custom_minimum_size = Vector2(40, 40)
 	weather_icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	weather_icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	weather_hbox.add_child(weather_icon_rect)
@@ -226,7 +227,7 @@ func _build_ui() -> void:
 	weather_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	weather_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	weather_lbl.add_theme_color_override("font_color", Color(0.22, 0.16, 0.1))
-	weather_lbl.add_theme_font_size_override("font_size", 12)
+	weather_lbl.add_theme_font_size_override("font_size", 15)
 	weather_hbox.add_child(weather_lbl)
 
 	var discount_card := PanelContainer.new()
@@ -237,20 +238,20 @@ func _build_ui() -> void:
 	discount_lbl = Label.new()
 	discount_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	discount_lbl.add_theme_color_override("font_color", Color(0.55, 0.18, 0.12))
-	discount_lbl.add_theme_font_size_override("font_size", 12)
+	discount_lbl.add_theme_font_size_override("font_size", 15)
 	discount_card.add_child(discount_lbl)
 
 	# 3. Main Wholesale Stalls Grid (Scrollable)
 	var market_card := PanelContainer.new()
 	market_card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	market_card.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	market_card.add_theme_stylebox_override("panel", _make_card_style(TEX_CARD_BROWN, 16, 12))
+	market_card.add_theme_stylebox_override("panel", _make_card_style(TEX_CARD_BROWN, 16, 10))
 	root_vbox.add_child(market_card)
 
 	var market_vbox := VBoxContainer.new()
 	market_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	market_vbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	market_vbox.add_theme_constant_override("separation", 8)
+	market_vbox.add_theme_constant_override("separation", 6)
 	market_card.add_child(market_vbox)
 
 	var section_hdr := HBoxContainer.new()
@@ -261,13 +262,13 @@ func _build_ui() -> void:
 	sec_lbl.text = "SẠP HÀNG CHỢ SỈ ĐẦU HẺM & BẢNG GIÁ BÁN LẺ HÔM NAY"
 	sec_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	sec_lbl.add_theme_color_override("font_color", Color(0.26, 0.17, 0.09))
-	sec_lbl.add_theme_font_size_override("font_size", 14)
+	sec_lbl.add_theme_font_size_override("font_size", 17)
 	section_hdr.add_child(sec_lbl)
 
 	feedback_lbl = Label.new()
 	feedback_lbl.text = "Nhập hàng phù hợp thời tiết & bấm 'Châm Đầy Các Kệ' trước khi mở cửa!"
 	feedback_lbl.add_theme_color_override("font_color", Color(0.2, 0.42, 0.24))
-	feedback_lbl.add_theme_font_size_override("font_size", 12)
+	feedback_lbl.add_theme_font_size_override("font_size", 15)
 	section_hdr.add_child(feedback_lbl)
 
 	var scroll := ScrollContainer.new()
@@ -279,12 +280,12 @@ func _build_ui() -> void:
 	items_grid.columns = 2
 	items_grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	items_grid.add_theme_constant_override("h_separation", 12)
-	items_grid.add_theme_constant_override("v_separation", 10)
+	items_grid.add_theme_constant_override("v_separation", 8)
 	scroll.add_child(items_grid)
 
 	# 4. Bottom Action Bar
 	var bottom_panel := PanelContainer.new()
-	bottom_panel.add_theme_stylebox_override("panel", _make_card_style(TEX_CARD_BROWN, 16, 10))
+	bottom_panel.add_theme_stylebox_override("panel", _make_card_style(TEX_CARD_BROWN, 16, 8))
 	root_vbox.add_child(bottom_panel)
 
 	var bottom_hbox := HBoxContainer.new()
@@ -294,8 +295,8 @@ func _build_ui() -> void:
 
 	var btn_restock_all := Button.new()
 	btn_restock_all.text = "Châm Đầy Hàng Lên Các Kệ Trong Quán"
-	btn_restock_all.custom_minimum_size = Vector2(280, 42)
-	_style_button(btn_restock_all, TEX_BTN_YELLOW, 13)
+	btn_restock_all.custom_minimum_size = Vector2(340, 50)
+	_style_button(btn_restock_all, TEX_BTN_YELLOW, 16)
 	btn_restock_all.pressed.connect(_on_restock_all_pressed)
 	bottom_hbox.add_child(btn_restock_all)
 
@@ -303,8 +304,8 @@ func _build_ui() -> void:
 	btn_candy.text = "Mua Hũ Kẹo Lẻ (+10 viên | -3.000đ)"
 	btn_candy.icon = ICON_CANDY
 	btn_candy.expand_icon = true
-	btn_candy.custom_minimum_size = Vector2(265, 42)
-	_style_button(btn_candy, TEX_BTN_CREAM, 13)
+	btn_candy.custom_minimum_size = Vector2(320, 50)
+	_style_button(btn_candy, TEX_BTN_CREAM, 16)
 	btn_candy.pressed.connect(func() -> void: EconomyManager.refill_candy_jar())
 	bottom_hbox.add_child(btn_candy)
 
@@ -313,9 +314,9 @@ func _build_ui() -> void:
 	bottom_hbox.add_child(spacer)
 
 	var btn_open_store := Button.new()
-	btn_open_store.text = "Kéo Cửa Mở Hàng Đón Khách (07:00 Sáng) ➔"
-	btn_open_store.custom_minimum_size = Vector2(345, 44)
-	_style_button(btn_open_store, TEX_BTN_GREEN, 14)
+	btn_open_store.text = "Kéo Cửa Mở Hàng Đón Khách (07:00 Sáng) >>"
+	btn_open_store.custom_minimum_size = Vector2(410, 50)
+	_style_button(btn_open_store, TEX_BTN_GREEN, 17)
 	btn_open_store.pressed.connect(_on_open_store_pressed)
 	bottom_hbox.add_child(btn_open_store)
 
@@ -353,7 +354,7 @@ func _refresh_weather_and_discount() -> void:
 		if disc_item != null:
 			var orig_cost: int = disc_item.wholesale_cost
 			var sale_cost: int = EconomyManager.get_effective_wholesale_cost(disc_id)
-			discount_lbl.text = "KHUYẾN MÃI CHỢ SỈ HÔM NAY (-25%%):\nSạp [%s] giảm giá sỉ từ %sđ ➔ chỉ còn %sđ/món!" % [
+			discount_lbl.text = "KHUYẾN MÃI CHỢ SỈ HÔM NAY (-25%%):\nSạp [%s] giảm giá sỉ từ %sđ -> chỉ còn %sđ/món!" % [
 				disc_item.display_name,
 				EconomyManager.format_vnd(orig_cost),
 				EconomyManager.format_vnd(sale_cost)
@@ -388,7 +389,7 @@ func _refresh_items_grid() -> void:
 		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		var bg_c: Color = Color("#FDECE4") if is_discounted else Color("#F5EBDC")
 		var brd_c: Color = Color("#C84B31") if is_discounted else Color("#3E2F26")
-		card.add_theme_stylebox_override("panel", _make_paper_box(bg_c, brd_c, 2 if is_discounted else 1, 14, 10))
+		card.add_theme_stylebox_override("panel", _make_paper_box(bg_c, brd_c, 2 if is_discounted else 1, 14, 8))
 		items_grid.add_child(card)
 
 		var hbox := HBoxContainer.new()
@@ -398,7 +399,7 @@ func _refresh_items_grid() -> void:
 		if item.icon != null:
 			var icon_rect := TextureRect.new()
 			icon_rect.texture = item.icon
-			icon_rect.custom_minimum_size = Vector2(48, 48)
+			icon_rect.custom_minimum_size = Vector2(56, 56)
 			icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 			icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 			hbox.add_child(icon_rect)
@@ -417,7 +418,7 @@ func _refresh_items_grid() -> void:
 			shelf_stock
 		]
 		name_lbl.add_theme_color_override("font_color", Color("#C84B31") if is_discounted else Color(0.22, 0.14, 0.07))
-		name_lbl.add_theme_font_size_override("font_size", 13)
+		name_lbl.add_theme_font_size_override("font_size", 16)
 		info_vbox.add_child(name_lbl)
 
 		var raw_base: Variant = item.get("base_price")
@@ -430,32 +431,32 @@ func _refresh_items_grid() -> void:
 
 		var price_lbl := Label.new()
 		var profit_per_unit: int = retail_price - unit_wholesale
-		price_lbl.text = "Sỉ: %sđ ➔ Lẻ: %sđ (Lời +%sđ | %s)" % [
+		price_lbl.text = "Sỉ: %sđ -> Lẻ: %sđ (Lời +%sđ | %s)" % [
 			EconomyManager.format_vnd(unit_wholesale),
 			EconomyManager.format_vnd(retail_price),
 			EconomyManager.format_vnd(profit_per_unit),
 			mood_tag
 		]
 		price_lbl.add_theme_color_override("font_color", Color(0.18, 0.44, 0.22))
-		price_lbl.add_theme_font_size_override("font_size", 11)
+		price_lbl.add_theme_font_size_override("font_size", 14)
 		info_vbox.add_child(price_lbl)
 
 		var btn_row := HBoxContainer.new()
-		btn_row.add_theme_constant_override("separation", 6)
+		btn_row.add_theme_constant_override("separation", 8)
 		info_vbox.add_child(btn_row)
 
 		var iid: String = str(item_id)
 		var cost8: int = unit_wholesale * 8
 		var btn_buy8 := Button.new()
 		btn_buy8.text = "+8 (%sđ)" % EconomyManager.format_vnd(cost8)
-		_style_button(btn_buy8, TEX_BTN_GREEN, 11)
+		_style_button(btn_buy8, TEX_BTN_GREEN, 14)
 		btn_buy8.pressed.connect(func() -> void: EconomyManager.buy_wholesale_pack(iid, 8))
 		btn_row.add_child(btn_buy8)
 
 		var cost16: int = unit_wholesale * 16
 		var btn_buy16 := Button.new()
 		btn_buy16.text = "+16 (%sđ)" % EconomyManager.format_vnd(cost16)
-		_style_button(btn_buy16, TEX_BTN_GREEN, 11)
+		_style_button(btn_buy16, TEX_BTN_GREEN, 14)
 		btn_buy16.pressed.connect(func() -> void: EconomyManager.buy_wholesale_pack(iid, 16))
 		btn_row.add_child(btn_buy16)
 
@@ -466,13 +467,13 @@ func _refresh_items_grid() -> void:
 		# Clean Stepper cluster for Retail Price (-500 / +500)
 		var btn_minus := Button.new()
 		btn_minus.text = "-500đ"
-		_style_button(btn_minus, TEX_BTN_CREAM, 11)
+		_style_button(btn_minus, TEX_BTN_CREAM, 14)
 		btn_minus.pressed.connect(func() -> void: EconomyManager.adjust_item_price(iid, -500))
 		btn_row.add_child(btn_minus)
 
 		var btn_plus := Button.new()
 		btn_plus.text = "+500đ"
-		_style_button(btn_plus, TEX_BTN_CREAM, 11)
+		_style_button(btn_plus, TEX_BTN_CREAM, 14)
 		btn_plus.pressed.connect(func() -> void: EconomyManager.adjust_item_price(iid, 500))
 		btn_row.add_child(btn_plus)
 

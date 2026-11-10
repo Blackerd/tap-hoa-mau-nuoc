@@ -1,34 +1,31 @@
 class_name PanZoomCamera
 extends Camera2D
 
-var target_zoom := Vector2(0.86, 0.86)
-var min_zoom: float = 0.58
-var max_zoom: float = 1.35
+var target_zoom := Vector2(1.06, 1.06)
+var min_zoom: float = 0.78
+var max_zoom: float = 1.45
 var pan_speed: float = 420.0
 var _is_dragging: bool = false
 var _touch_points: Dictionary = {}
 var _last_pinch_dist: float = 0.0
 
 func _ready() -> void:
-	position = Vector2(768, 468)
+	position = Vector2(705, 412)
 	_auto_fit_device_aspect()
 	get_viewport().size_changed.connect(_auto_fit_device_aspect)
 
 func _auto_fit_device_aspect() -> void:
-	# Tự động căn độ phóng (zoom) chuẩn cho cả iPad (4:3), Tablet (16:10) và Điện thoại dài (19.5:9 / 20:9)
+	# Phóng to sân chơi chuẩn Mobile-First (1.06x = lớn hơn 34% so với 0.79x trước đây), lấp đầy 85-90% màn hình 1280x720
 	var vp_size: Vector2 = get_viewport_rect().size
 	if vp_size.x <= 0 or vp_size.y <= 0:
 		return
 	var aspect: float = vp_size.x / vp_size.y
 	if aspect < 1.5:
-		# Màn hình vuông như iPad (4:3 = 1.33) -> Thu nhỏ nhẹ để thấy trọn cây bàng và toàn bộ quán
-		target_zoom = Vector2(0.74, 0.74)
+		target_zoom = Vector2(0.96, 0.96)
 	elif aspect > 1.9:
-		# Màn hình điện thoại dài (19.5:9 = 2.16)
-		target_zoom = Vector2(0.84, 0.84)
+		target_zoom = Vector2(1.08, 1.08)
 	else:
-		# Màn hình chuẩn 16:9 -> Chừa khoảng giấy thoáng phía trên mái quán để Header không bao giờ đè lên bảng hiệu!
-		target_zoom = Vector2(0.79, 0.79)
+		target_zoom = Vector2(1.05, 1.05)
 	zoom = target_zoom
 
 func _process(delta: float) -> void:

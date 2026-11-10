@@ -117,12 +117,12 @@ func _run_e2e_suite() -> void:
 						c.position = Vector2(730.0, 420.0)
 						c.state = CustomerEntity.State.BROWSING_AT_SHELF
 					else:
-						c.position = Vector2(688.0, 620.0)
+						c.position = Vector2(688.0, 628.0)
 					idx += 1
 	await _capture_step("05_scene4_daytime_store_clean", "Scene 4: Giao Diện Bán Hàng Chính (07:00 - Không Chồng Chéo)")
 
 	# Trigger Toast Notification
-	EventBus.toast_requested.emit("🔔 Trống trường tan học! Học sinh ùa vào mua quà vặt!", Color("#C84B31"))
+	EventBus.toast_requested.emit("Trống trường tan học! Học sinh ùa vào mua quà vặt!", Color("#C84B31"))
 	await _capture_step("06_scene4_daytime_toast", "Scene 4: Kiểm Tra Thông Báo Toast Tự Mờ Ở Giữa Đỉnh Màn Hình")
 
 	# Trigger Customer Checkout Popup

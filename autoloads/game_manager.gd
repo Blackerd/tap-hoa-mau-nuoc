@@ -213,8 +213,8 @@ func _advance_ten_minutes() -> void:
 	if should_rush != is_rush_hour:
 		is_rush_hour = should_rush
 		if is_rush_hour:
-			EventBus.rush_hour_changed.emit(true, "🔔 Trống trường tan học! Học sinh ùa vào mua quà vặt!")
-			EventBus.toast_requested.emit("🔔 Tan trường! Mì trẻ em, kẹo kéo, kem mút bán cực chạy!", Color("#C84B31"))
+			EventBus.rush_hour_changed.emit(true, "[Tan trường] Trống trường điểm! Học sinh ùa vào mua quà vặt!")
+			EventBus.toast_requested.emit("[Tan trường] Mì trẻ em, kẹo kéo, kem mút bán cực chạy!", Color("#C84B31"))
 		else:
 			EventBus.rush_hour_changed.emit(false, "")
 
@@ -224,7 +224,7 @@ func _advance_ten_minutes() -> void:
 			current_weather = "Rainy"
 			weather_label = "Chiều mưa rào bất chợt"
 			EventBus.weather_changed.emit(current_weather, weather_label)
-			EventBus.toast_requested.emit("🌧️ Cơn mưa chiều ập tới! Khách tìm mua Áo mưa & Mì gói!", Color("#4A749C"))
+			EventBus.toast_requested.emit("[Mưa chiều] Cơn mưa rào ập tới! Khách tìm mua Áo mưa & Mì gói!", Color("#4A749C"))
 
 	if current_hour >= 21:
 		close_store_for_night()
@@ -281,7 +281,7 @@ func try_upgrade_store_level() -> bool:
 		EventBus.toast_requested.emit("Chưa đủ tiền để tô màu mở rộng quán (Cần %s đ)!" % EconomyManager.format_vnd(cost), Color("#C84B31"))
 		return false
 	if EconomyManager.reputation < req_rep:
-		EventBus.toast_requested.emit("Cần thêm điểm Tình Làng Nghĩa Xóm (%d/%d ♥)!" % [EconomyManager.reputation, req_rep], Color("#C84B31"))
+		EventBus.toast_requested.emit("Cần thêm điểm Tình Làng Nghĩa Xóm (%d/%d)!" % [EconomyManager.reputation, req_rep], Color("#C84B31"))
 		return false
 
 	EconomyManager.spend_money(cost)
@@ -290,7 +290,7 @@ func try_upgrade_store_level() -> bool:
 	save_game()
 	EventBus.store_level_changed.emit(store_level, next_cfg["title"], next_cfg["reveal_radius"])
 	EventBus.stamp_effect_requested.emit("MỞ RỘNG CẤP %d" % store_level, Vector2(800, 420))
-	EventBus.toast_requested.emit("🎨 Màu nước đã loang rộng ra khu phố! Đạt %s!" % next_cfg["title"], Color("#6B8E78"))
+	EventBus.toast_requested.emit("Màu nước đã loang rộng ra khu phố! Đạt %s!" % next_cfg["title"], Color("#6B8E78"))
 	return true
 
 func get_phase_label() -> String:
@@ -309,21 +309,21 @@ func get_phase_label() -> String:
 
 func get_weather_forecast_advice() -> String:
 	var disc_item: ItemData = EconomyManager.item_catalog.get(daily_discount_item_id)
-	var disc_str: String = "  |  🏷️ Chợ sỉ hôm nay giảm giá 25%% mặt hàng: %s!" % disc_item.display_name if disc_item else ""
+	var disc_str: String = "  |  Chợ sỉ hôm nay giảm giá 25%%: %s!" % disc_item.display_name if disc_item else ""
 	match current_weather:
 		"Sunny":
-			return "☀️ Dự báo hôm nay: TRƯA NẮNG VÀNG RỰC — Khách hỏi mua Kem Mút Đậu Xanh & Nước Ngọt Bịch rất nhiều!" + disc_str
+			return "Dự báo hôm nay: TRƯA NẮNG VÀNG RỰC — Khách hỏi mua Kem Mút Đậu Xanh & Nước Ngọt Bịch rất nhiều!" + disc_str
 		"Rainy":
-			return "🌧️ Dự báo hôm nay: MƯA PHÙN ĐẦU NGÕ — Người đi đường rất cần Áo Mưa Giấy Tiện Lợi và Cà Phê / Mì Ly!" + disc_str
+			return "Dự báo hôm nay: MƯA PHÙN ĐẦU NGÕ — Người đi đường rất cần Áo Mưa Giấy Tiện Lợi và Cà Phê / Mì Ly!" + disc_str
 		_:
-			return "🍃 Dự báo hôm nay: GIÓ MÁT HIÊN NHÀ — Hàng xóm thích ngồi bàn trà đá gốc đa và mua quà vặt đều đặn." + disc_str
+			return "Dự báo hôm nay: GIÓ MÁT HIÊN NHÀ — Hàng xóm thích ngồi bàn trà đá gốc đa và mua quà vặt đều đặn." + disc_str
 
 func get_daily_story_vignette() -> String:
 	var stories: Array[String] = [
-		"📖 Nhật ký Đêm Ngày 1: Hôm nay %s chính thức kéo cánh cửa gỗ mở lại '%s'. Mùi gỗ thông cũ hòa cùng tiếng trẻ con ríu rít giờ tan tầm làm con ngõ nhỏ như sống lại những năm tháng tuổi thơ...",
-		"📖 Nhật ký Đêm Ngày 2: Sáng nay Bác Tư ghé uống chén trà đá dưới gốc đa, kể chuyện ngày xưa bà ngoại cũng hay để dành kẹo kéo thối tiền lẻ cho lũ trẻ trong xóm. Tiệm nhỏ của %s đã bắt đầu trở thành điểm hẹn quen thuộc.",
-		"📖 Nhật ký Đêm Ngày 3: Anh Tuấn sinh viên phòng trọ cuối ngõ ghé mua vội gói cà phê hòa tan để thức vẽ đồ án. Nhìn ánh đèn vàng hắt ra từ hiên quán '%s', ai đi làm về muộn cũng thấy lòng ấm lại.",
-		"📖 Nhật ký Đêm Ngày %d: Từng nét cọ màu nước đang dần tô thắm lại cả khu phố. '%s' của %s không chỉ bán những món hàng lặt vặt, mà còn giữ giùm cả xóm nhỏ một khoảng ký ức bình yên..."
+		"Nhật ký Đêm Ngày 1: Hôm nay %s chính thức kéo cánh cửa gỗ mở lại '%s'. Mùi gỗ thông cũ hòa cùng tiếng trẻ con ríu rít giờ tan tầm làm con ngõ nhỏ như sống lại những năm tháng tuổi thơ...",
+		"Nhật ký Đêm Ngày 2: Sáng nay Bác Tư ghé uống chén trà đá dưới gốc đa, kể chuyện ngày xưa bà ngoại cũng hay để dành kẹo kéo thối tiền lẻ cho lũ trẻ trong xóm. Tiệm nhỏ của %s đã bắt đầu trở thành điểm hẹn quen thuộc.",
+		"Nhật ký Đêm Ngày 3: Anh Tuấn sinh viên phòng trọ cuối ngõ ghé mua vội gói cà phê hòa tan để thức vẽ đồ án. Nhìn ánh đèn vàng hắt ra từ hiên quán '%s', ai đi làm về muộn cũng thấy lòng ấm lại.",
+		"Nhật ký Đêm Ngày %d: Từng nét cọ màu nước đang dần tô thắm lại cả khu phố. '%s' của %s không chỉ bán những món hàng lặt vặt, mà còn giữ giùm cả xóm nhỏ một khoảng ký ức bình yên..."
 	]
 	if current_day <= 3:
 		return stories[current_day - 1] % [player_name, store_name]

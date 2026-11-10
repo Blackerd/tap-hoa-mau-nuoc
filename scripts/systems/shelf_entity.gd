@@ -64,7 +64,7 @@ func restock_from_warehouse() -> int:
 		queue_redraw()
 		var item: ItemData = EconomyManager.item_catalog.get(item_id)
 		var item_name: String = item.display_name if item else item_id
-		EventBus.toast_requested.emit("✨ Đã xếp +%d %s lên kệ!" % [added, item_name], Color("#6B8E78"))
+		EventBus.toast_requested.emit("Đã xếp +%d %s lên kệ!" % [added, item_name], Color("#6B8E78"))
 	else:
 		var item: ItemData = EconomyManager.item_catalog.get(item_id)
 		var item_name: String = item.display_name if item else item_id
@@ -115,27 +115,27 @@ func _draw() -> void:
 	if shelf_tex != null:
 		draw_texture_rect(shelf_tex, shelf_rect, false)
 
-	# 3. Compact stock tag + Item Icon at top of shelf
+	# 3. Large Mobile-Friendly Stock Tag + Item Icon at top of shelf (Font 15px, Icon 22x22)
 	var font: Font = ThemeDB.fallback_font
 	var stock_str: String = "%d/%d" % [current_stock, max_capacity] if current_stock > 0 else "HẾT!"
-	var tag_rect := Rect2(-34, -112, 68, 22)
+	var tag_rect := Rect2(-44, -118, 88, 28)
 	var tag_bg: Color = PAPER_CREAM if current_stock > 0 else Color("#FADBD8")
 	draw_rect(tag_rect, tag_bg, true)
-	draw_rect(tag_rect, Color("#C84B31") if is_hovered or current_stock == 0 else INK_COLOR, false, 1.6)
+	draw_rect(tag_rect, Color("#C84B31") if is_hovered or current_stock == 0 else INK_COLOR, false, 2.0)
 
 	if item_tex != null:
-		draw_texture_rect(item_tex, Rect2(tag_rect.position.x + 3, tag_rect.position.y + 2, 18, 18), false)
+		draw_texture_rect(item_tex, Rect2(tag_rect.position.x + 4, tag_rect.position.y + 3, 22, 22), false)
 		draw_string(
 			font,
-			Vector2(tag_rect.position.x + 24, tag_rect.position.y + 15),
+			Vector2(tag_rect.position.x + 29, tag_rect.position.y + 20),
 			stock_str,
 			HORIZONTAL_ALIGNMENT_LEFT,
 			-1,
-			11,
+			15,
 			INK_COLOR if current_stock > 0 else Color("#C84B31")
 		)
 	else:
-		draw_string(font, Vector2(tag_rect.position.x + 8, tag_rect.position.y + 15), stock_str, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, INK_COLOR)
+		draw_string(font, Vector2(tag_rect.position.x + 10, tag_rect.position.y + 20), stock_str, HORIZONTAL_ALIGNMENT_LEFT, -1, 15, INK_COLOR)
 
 	if is_hovered:
 		draw_rect(Rect2(-52, -92, 104, 98), Color(0.78, 0.29, 0.19, 0.55), false, 2.2)
