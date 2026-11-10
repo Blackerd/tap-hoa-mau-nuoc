@@ -19,6 +19,12 @@ const TEX_BTN_PINK: Texture2D = preload("res://assets/sprites/ui/ui_btn_pink.png
 const TEX_BTN_CREAM: Texture2D = preload("res://assets/sprites/ui/ui_btn_cream.png")
 const TEX_STAMP_RING: Texture2D = preload("res://assets/sprites/ui/ui_stamp_ring.png")
 const TEX_SHOPKEEPER: Texture2D = preload("res://assets/sprites/characters/char_shopkeeper.png")
+const ICON_MONEY: Texture2D = preload("res://assets/sprites/items/icon_money.png")
+const ICON_HEART: Texture2D = preload("res://assets/sprites/items/icon_heart.png")
+const ICON_CANDY: Texture2D = preload("res://assets/sprites/items/icon_candy_jar.png")
+const ICON_SUN: Texture2D = preload("res://assets/sprites/items/icon_sun.png")
+const ICON_RAIN: Texture2D = preload("res://assets/sprites/items/icon_rain.png")
+const ICON_CLOCK: Texture2D = preload("res://assets/sprites/items/icon_clock.png")
 
 var SafeMarginRoot: MarginContainer
 var MainVBox: VBoxContainer
@@ -26,6 +32,7 @@ var MiddleWorkspace: Control
 
 # Daytime HUD Labels & Buttons
 var lbl_day_time: Label
+var icon_weather_hud: TextureRect
 var lbl_weather: Label
 var lbl_money: Label
 var lbl_rep_candy: Label
@@ -238,28 +245,64 @@ func _build_responsive_skeleton() -> void:
 	top_hbox.add_child(tl_panel)
 
 	var tl_vbox := VBoxContainer.new()
-	tl_vbox.add_theme_constant_override("separation", 2)
+	tl_vbox.add_theme_constant_override("separation", 3)
 	tl_panel.add_child(tl_vbox)
 
+	var row_dt := HBoxContainer.new()
+	row_dt.add_theme_constant_override("separation", 6)
+	tl_vbox.add_child(row_dt)
+	var ic_clk := TextureRect.new()
+	ic_clk.texture = ICON_CLOCK
+	ic_clk.custom_minimum_size = Vector2(18, 18)
+	ic_clk.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	ic_clk.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	row_dt.add_child(ic_clk)
 	lbl_day_time = Label.new()
 	lbl_day_time.add_theme_color_override("font_color", INK_DARK)
-	lbl_day_time.add_theme_font_size_override("font_size", 13)
-	tl_vbox.add_child(lbl_day_time)
+	lbl_day_time.add_theme_font_size_override("font_size", 12)
+	row_dt.add_child(lbl_day_time)
 
+	var row_wt := HBoxContainer.new()
+	row_wt.add_theme_constant_override("separation", 6)
+	tl_vbox.add_child(row_wt)
+	icon_weather_hud = TextureRect.new()
+	icon_weather_hud.texture = ICON_SUN
+	icon_weather_hud.custom_minimum_size = Vector2(18, 18)
+	icon_weather_hud.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon_weather_hud.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	row_wt.add_child(icon_weather_hud)
 	lbl_weather = Label.new()
 	lbl_weather.add_theme_color_override("font_color", SAGE_GREEN.darkened(0.25))
 	lbl_weather.add_theme_font_size_override("font_size", 12)
-	tl_vbox.add_child(lbl_weather)
+	row_wt.add_child(lbl_weather)
 
+	var row_mn := HBoxContainer.new()
+	row_mn.add_theme_constant_override("separation", 6)
+	tl_vbox.add_child(row_mn)
+	var ic_mn := TextureRect.new()
+	ic_mn.texture = ICON_MONEY
+	ic_mn.custom_minimum_size = Vector2(20, 20)
+	ic_mn.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	ic_mn.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	row_mn.add_child(ic_mn)
 	lbl_money = Label.new()
 	lbl_money.add_theme_color_override("font_color", STAMP_RED)
-	lbl_money.add_theme_font_size_override("font_size", 15)
-	tl_vbox.add_child(lbl_money)
+	lbl_money.add_theme_font_size_override("font_size", 14)
+	row_mn.add_child(lbl_money)
 
+	var row_rc := HBoxContainer.new()
+	row_rc.add_theme_constant_override("separation", 6)
+	tl_vbox.add_child(row_rc)
+	var ic_ht := TextureRect.new()
+	ic_ht.texture = ICON_HEART
+	ic_ht.custom_minimum_size = Vector2(18, 18)
+	ic_ht.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	ic_ht.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	row_rc.add_child(ic_ht)
 	lbl_rep_candy = Label.new()
 	lbl_rep_candy.add_theme_color_override("font_color", INK_DARK)
 	lbl_rep_candy.add_theme_font_size_override("font_size", 12)
-	tl_vbox.add_child(lbl_rep_candy)
+	row_rc.add_child(lbl_rep_candy)
 
 	# 1B. Top-Center Auto-Fading Toast Strip (NEVER permanently covers the store signboard!)
 	var center_holder := HBoxContainer.new()
@@ -271,7 +314,7 @@ func _build_responsive_skeleton() -> void:
 
 	toast_panel = PanelContainer.new()
 	toast_panel.custom_minimum_size = Vector2(320, 0)
-	toast_panel.add_theme_stylebox_override("panel", _style_tex_panel(TEX_STRIP_SHORT, 18, 22, 8, 8))
+	toast_panel.add_theme_stylebox_override("panel", _style_paper_panel(Color("#FFF8E8"), Color("#8A4B38"), 2))
 	toast_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	toast_panel.modulate.a = 0.0
 	center_holder.add_child(toast_panel)
@@ -979,7 +1022,10 @@ func _build_floating_ledger_notepad() -> void:
 	var btn_close := Button.new()
 	btn_close.text = "✕"
 	_apply_button_theme(btn_close, PAPER_CREAM, STAMP_RED)
-	btn_close.pressed.connect(func() -> void: ledger_panel.visible = false)
+	btn_close.pressed.connect(func() -> void:
+		ledger_panel.visible = false
+		_show_next_waiting_customer()
+	)
 	header_hbox.add_child(btn_close)
 
 	var scroll := ScrollContainer.new()
@@ -1128,13 +1174,15 @@ func _build_stamp_fx() -> void:
 	hbox.add_child(lbl_stamp_text)
 
 func _refresh_all_ui() -> void:
+	_on_time_updated(GameManager.current_day, GameManager.current_hour, GameManager.current_minute, GameManager.get_phase_label())
+	_on_weather_changed(GameManager.current_weather, GameManager.weather_label)
 	_refresh_stats()
 	_refresh_level_badge()
 	_rebuild_ledger_lists()
 
 func _refresh_stats() -> void:
-	lbl_money.text = "💰 Vốn quán: %s đ" % EconomyManager.format_vnd(EconomyManager.money)
-	lbl_rep_candy.text = "♥ Tình làng xóm: %d  |  🍬 Hũ kẹo: %d viên" % [EconomyManager.reputation, EconomyManager.candy_jar]
+	lbl_money.text = "Vốn quán: %s đ" % EconomyManager.format_vnd(EconomyManager.money)
+	lbl_rep_candy.text = "Tình làng: %d  |  Hũ kẹo: %d viên" % [EconomyManager.reputation, EconomyManager.candy_jar]
 	if MorningMarketModal and MorningMarketModal.visible:
 		_refresh_morning_market_modal()
 	if NightHomeModal and NightHomeModal.visible:
@@ -1168,11 +1216,12 @@ func _on_time_updated(day: int, hour: int, minute: int, phase_name: String) -> v
 			rhythm_label = "🏮 Tối xóm nhỏ"
 		else:
 			rhythm_label = "☀️ Nhịp thong thả"
-	lbl_day_time.text = "📅 Ngày %d — %02d:%02d (%s)" % [day, hour, minute, rhythm_label]
+	lbl_day_time.text = "Ngày %d — %02d:%02d (%s)" % [day, hour, minute, rhythm_label]
 
 func _on_weather_changed(weather_id: String, label: String) -> void:
-	var icon: String = "☀️" if weather_id == "Sunny" else ("🌧️" if weather_id == "Rainy" else "🍃")
-	lbl_weather.text = "%s Thời tiết: %s" % [icon, label]
+	if icon_weather_hud:
+		icon_weather_hud.texture = ICON_RAIN if weather_id == "Rainy" else ICON_SUN
+	lbl_weather.text = "Thời tiết: %s" % label
 
 func _on_rush_hour_changed(is_active: bool, msg: String) -> void:
 	if is_active and msg != "":
@@ -1181,11 +1230,14 @@ func _on_rush_hour_changed(is_active: bool, msg: String) -> void:
 func _toggle_ledger_panel() -> void:
 	ledger_panel.visible = not ledger_panel.visible
 	if ledger_panel.visible:
+		checkout_panel.visible = false
 		if _build_active:
 			_build_active = false
 			btn_toggle_build.text = "🔨 Đóng Kệ: TẮT"
 			EventBus.build_mode_toggled.emit(false, "")
 		_rebuild_ledger_lists()
+	else:
+		_show_next_waiting_customer()
 
 func _on_toggle_build_pressed() -> void:
 	var furn_keys: Array = EconomyManager.furniture_catalog.keys()
@@ -1380,7 +1432,7 @@ func _show_next_waiting_customer() -> void:
 		EconomyManager.format_vnd(bill),
 		credit_hint
 	]
-	checkout_panel.visible = true
+	checkout_panel.visible = not (ledger_panel != null and ledger_panel.visible)
 
 func _resolve_active_customer(method: String) -> void:
 	if is_instance_valid(active_customer):

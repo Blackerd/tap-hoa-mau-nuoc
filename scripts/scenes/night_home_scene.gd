@@ -8,6 +8,8 @@ const TEX_BTN_YELLOW: Texture2D = preload("res://assets/sprites/ui/ui_btn_yellow
 const TEX_BTN_PINK: Texture2D = preload("res://assets/sprites/ui/ui_btn_pink.png")
 const TEX_BTN_CREAM: Texture2D = preload("res://assets/sprites/ui/ui_btn_cream.png")
 const TEX_BG_STORE: Texture2D = preload("res://assets/art/bg_tiem_ba_ba.jpg")
+const ICON_MONEY: Texture2D = preload("res://assets/sprites/items/icon_money.png")
+const ICON_HEART: Texture2D = preload("res://assets/sprites/items/icon_heart.png")
 
 var header_title_lbl: Label
 var stats_lbl: Label
@@ -42,14 +44,30 @@ func _connect_signals() -> void:
 func _make_card_style(tex: Texture2D, pad_h: int = 16, pad_v: int = 12) -> StyleBoxTexture:
 	var sb := StyleBoxTexture.new()
 	sb.texture = tex
-	sb.texture_margin_left = 18
-	sb.texture_margin_right = 18
-	sb.texture_margin_top = 16
-	sb.texture_margin_bottom = 16
+	sb.texture_margin_left = 20
+	sb.texture_margin_right = 20
+	sb.texture_margin_top = 18
+	sb.texture_margin_bottom = 18
 	sb.content_margin_left = pad_h
 	sb.content_margin_right = pad_h
 	sb.content_margin_top = pad_v
 	sb.content_margin_bottom = pad_v
+	return sb
+
+
+func _make_paper_box(bg_col: Color, border_col: Color, bw: int = 2, pad_h: int = 16, pad_v: int = 12) -> StyleBoxFlat:
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = bg_col
+	sb.border_color = border_col
+	sb.set_border_width_all(bw)
+	sb.set_corner_radius_all(8)
+	sb.content_margin_left = pad_h
+	sb.content_margin_right = pad_h
+	sb.content_margin_top = pad_v
+	sb.content_margin_bottom = pad_v
+	sb.shadow_color = Color(0.14, 0.1, 0.07, 0.16)
+	sb.shadow_size = 4
+	sb.shadow_offset = Vector2(1, 2)
 	return sb
 
 
@@ -154,7 +172,7 @@ func _build_ui() -> void:
 
 	# Story Vignette Card
 	var diary_card := PanelContainer.new()
-	diary_card.add_theme_stylebox_override("panel", _make_card_style(TEX_CARD_RED, 18, 14))
+	diary_card.add_theme_stylebox_override("panel", _make_paper_box(Color("#FDF3D8"), Color("#C84B31"), 2, 18, 14))
 	left_vbox.add_child(diary_card)
 
 	var diary_vbox := VBoxContainer.new()
@@ -297,16 +315,16 @@ func _refresh_all() -> void:
 		var net: int = GameManager.daily_revenue - GameManager.daily_spent
 		var net_prefix: String = "+" if net >= 0 else ""
 		finance_lbl.text = (
-			"• Doanh thu bán lẻ & trà đá hôm nay: +%s đ\n" % EconomyManager.format_vnd(GameManager.daily_revenue)
-			+ "• Chi phí nhập hàng sỉ & mua kẹo: -%s đ\n" % EconomyManager.format_vnd(GameManager.daily_spent)
+			"- Doanh thu bán lẻ & trà đá hôm nay: +%s đ\n" % EconomyManager.format_vnd(GameManager.daily_revenue)
+			+ "- Chi phí nhập hàng sỉ & mua kẹo: -%s đ\n" % EconomyManager.format_vnd(GameManager.daily_spent)
 			+ "➔ CHÊNH LỆCH THU CHI TRONG NGÀY: %s%s đ" % [net_prefix, EconomyManager.format_vnd(net)]
 		)
 	if customer_stats_lbl:
 		customer_stats_lbl.text = (
-			"👥 Thống kê bà con ghé quán hôm nay:\n"
-			+ "  • Khách mua hàng hài lòng: %d lượt\n" % GameManager.daily_customers_served
-			+ "  • Khách đổi ý / bỏ về vì hết món hoặc chờ lâu: %d lượt\n" % GameManager.daily_customers_left
-			+ "  • Tổng nợ hàng xóm chưa thu: %s đ" % EconomyManager.format_vnd(EconomyManager.get_unpaid_debt_total())
+			"Thống kê bà con ghé quán hôm nay:\n"
+			+ "  - Khách mua hàng hài lòng: %d lượt\n" % GameManager.daily_customers_served
+			+ "  - Khách đổi ý / bỏ về vì hết món hoặc chờ lâu: %d lượt\n" % GameManager.daily_customers_left
+			+ "  - Tổng nợ hàng xóm chưa thu: %s đ" % EconomyManager.format_vnd(EconomyManager.get_unpaid_debt_total())
 		)
 	if btn_upgrade:
 		if lvl < 4:
@@ -334,7 +352,7 @@ func _refresh_debt_list() -> void:
 			continue
 		unpaid_count += 1
 		var card := PanelContainer.new()
-		card.add_theme_stylebox_override("panel", _make_card_style(TEX_CARD_RED, 14, 10))
+		card.add_theme_stylebox_override("panel", _make_paper_box(Color("#F6ECDC"), Color("#8A4B38"), 1, 14, 10))
 		debt_vbox.add_child(card)
 
 		var row := HBoxContainer.new()
@@ -357,7 +375,9 @@ func _refresh_debt_list() -> void:
 
 		var rid: int = rec.record_id
 		var btn_collect := Button.new()
-		btn_collect.text = "💮 Thu Nợ (+2 ♥)"
+		btn_collect.text = "Thu Nợ (+2)"
+		btn_collect.icon = ICON_HEART
+		btn_collect.expand_icon = true
 		_style_button(btn_collect, TEX_BTN_GREEN, 12)
 		btn_collect.pressed.connect(func() -> void:
 			EconomyManager.collect_debt(rid)

@@ -260,3 +260,4 @@ func _refresh_story_page() -> void:
 	lbl_page_indicator.text = " Trang %d / %d " % [current_page + 1, story_pages.size()]
 	btn_prev_page.disabled = (current_page <= 0)
 	btn_next_page.disabled = (current_page >= story_pages.size() - 1)
+

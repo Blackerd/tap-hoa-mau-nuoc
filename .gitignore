@@ -1,9 +1,10 @@
 # Godot 4+ cache & local editor state
 .godot/
 
-# Exported builds
+# Exported builds & local E2E screenshots
 build/
 exports/
+test_screenshots/
 *.apk
 *.aab
 *.ipa

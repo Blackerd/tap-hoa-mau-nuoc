@@ -14,6 +14,9 @@ const TEX_BTN_PINK: Texture2D = preload("res://assets/sprites/ui/ui_btn_pink.png
 const TEX_BTN_CREAM: Texture2D = preload("res://assets/sprites/ui/ui_btn_cream.png")
 const TEX_SHOPKEEPER: Texture2D = preload("res://assets/sprites/characters/char_shopkeeper.png")
 const TEX_CASHIER_DESK: Texture2D = preload("res://assets/sprites/furniture/cashier_desk.png")
+const ICON_MONEY: Texture2D = preload("res://assets/sprites/items/icon_money.png")
+const ICON_HEART: Texture2D = preload("res://assets/sprites/items/icon_heart.png")
+const ICON_CANDY: Texture2D = preload("res://assets/sprites/items/icon_candy_jar.png")
 
 var input_owner_name: LineEdit
 var input_store_name: LineEdit
@@ -108,10 +111,10 @@ func _build_ui() -> void:
 	card.add_child(main_vbox)
 
 	var title := Label.new()
-	title.text = "📝 GIẤY ĐĂNG KÝ KHAI TRƯƠNG TIỆM TẠP HÓA ĐẦU NGÕ"
+	title.text = "GIẤY ĐĂNG KÝ KHAI TRƯƠNG TIỆM TẠP HÓA ĐẦU NGÕ"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_color_override("font_color", STAMP_RED)
-	title.add_theme_font_size_override("font_size", 22)
+	title.add_theme_font_size_override("font_size", 21)
 	main_vbox.add_child(title)
 
 	var body_hbox := HBoxContainer.new()
@@ -133,7 +136,7 @@ func _build_ui() -> void:
 	preview_panel.add_child(prev_vbox)
 
 	var prev_caption := Label.new()
-	prev_caption.text = "🪧 Xem Trước Biển Hiệu Tiệm"
+	prev_caption.text = "Xem Trước Biển Hiệu Tiệm"
 	prev_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	prev_caption.add_theme_color_override("font_color", INK_DARK)
 	prev_caption.add_theme_font_size_override("font_size", 14)
@@ -290,13 +293,15 @@ func _build_ui() -> void:
 	v3.add_child(perk_row)
 
 	var perks_info: Array[Dictionary] = [
-		{"id": "neighbor", "label": "♥ Hiếu Khách (+10 ♥ & +10 Kẹo)"},
-		{"id": "capital", "label": "💰 Vốn Mạnh (+15.000đ Vốn)"},
-		{"id": "stock", "label": "📦 Kho Đầy (+6 Gói Mỗi Loại)"}
+		{"id": "neighbor", "label": "Hiếu Khách (+10 Tình Làng & +10 Kẹo)", "icon": ICON_HEART},
+		{"id": "capital", "label": "Vốn Mạnh (+15.000đ Vốn)", "icon": ICON_MONEY},
+		{"id": "stock", "label": "Kho Đầy (+6 Gói Mỗi Loại)", "icon": ICON_CANDY}
 	]
 	for p in perks_info:
 		var pb := Button.new()
 		pb.text = p["label"]
+		pb.icon = p["icon"]
+		pb.expand_icon = true
 		pb.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		var pid: String = p["id"]
 		perk_buttons[pid] = pb
@@ -318,7 +323,7 @@ func _build_ui() -> void:
 	bot_row.add_child(btn_back)
 
 	var btn_confirm := Button.new()
-	btn_confirm.text = "💮 ĐÓNG DẤU KHAI TRƯƠNG & ĐI CHỢ ĐẦU MỐI SÁNG SỚM ➔"
+	btn_confirm.text = "ĐÓNG DẤU KHAI TRƯƠNG & ĐI CHỢ ĐẦU MỐI SÁNG SỚM ➔"
 	btn_confirm.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	btn_confirm.custom_minimum_size = Vector2(0, 48)
 	_apply_btn(btn_confirm, TEX_BTN_GREEN, 15)
@@ -346,4 +351,5 @@ func _update_live_preview() -> void:
 
 	lbl_preview_sign_title.text = s_name
 	lbl_preview_sign_owner.text = "Chủ tiệm: " + o_name
-	lbl_preview_greeting.text = "💬 Hàng xóm sẽ chào:\n\"%s ơi, bán cho cháu bịch mì trẻ em ở %s với ạ!\"" % [o_name, s_name]
+	lbl_preview_greeting.text = "Hàng xóm sẽ chào:\n\"%s ơi, bán cho cháu bịch mì trẻ em ở %s với ạ!\"" % [o_name, s_name]
+

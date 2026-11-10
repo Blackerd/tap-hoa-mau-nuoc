@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://bd4i1dt2udaiw"]
+
+[ext_resource type="Script" path="res://scripts/tests/e2e_screenshot_driver.gd" id="1_driver"]
+
+[node name="E2ETestRunner" type="Node"]
+script = ExtResource("1_driver")
+
