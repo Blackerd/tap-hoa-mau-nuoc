@@ -1,11 +1,21 @@
 extends Node
 
+const SAVE_FILE_PATH: String = "user://tap_hoa_save.json"
+
 enum StorePhase {
 	STORY_INTRO,
 	OWNER_SETUP,
 	MORNING_PREP,
 	OPEN_FOR_BUSINESS,
 	NIGHT_SUMMARY
+}
+
+const SCENE_PATHS: Dictionary = {
+	StorePhase.STORY_INTRO: "res://scenes/story_intro_scene.tscn",
+	StorePhase.OWNER_SETUP: "res://scenes/owner_setup_scene.tscn",
+	StorePhase.MORNING_PREP: "res://scenes/morning_market_scene.tscn",
+	StorePhase.OPEN_FOR_BUSINESS: "res://scenes/main/main_game.tscn",
+	StorePhase.NIGHT_SUMMARY: "res://scenes/night_home_scene.tscn"
 }
 
 var player_name: String = "Bà Ba"
@@ -19,6 +29,7 @@ var current_phase: StorePhase = StorePhase.STORY_INTRO
 
 var current_weather: String = "Sunny" # "Sunny", "Rainy", "Breezy"
 var weather_label: String = "Trưa nắng vàng rực"
+var daily_discount_item_id: String = "mi_tre_em"
 var is_rush_hour: bool = false
 var time_speed_multiplier: float = 1.0
 var auto_cashier_enabled: bool = false
@@ -28,6 +39,9 @@ var daily_revenue: int = 0
 var daily_spent: int = 0
 var daily_customers_served: int = 0
 var daily_customers_left: int = 0
+
+# Lưu trữ danh sách các kệ hàng trong quán xuyên suốt các Scene & Save/Load
+var saved_shelves: Array[Dictionary] = []
 
 # Hệ thống Level "Tô màu khu phố" (Style 8)
 var store_level: int = 1
@@ -66,8 +80,17 @@ var _minute_accumulator: float = 0.0
 const SECONDS_PER_TEN_MINUTES: float = 2.8
 
 func _ready() -> void:
+	_init_default_shelves()
 	_roll_daily_weather()
 	call_deferred("_broadcast_initial_state")
+
+func _init_default_shelves() -> void:
+	saved_shelves = [
+		{"x": 1, "y": 1, "furn_id": "wooden_shelf", "item_id": "mi_tre_em", "stock": 10},
+		{"x": 4, "y": 1, "furn_id": "ice_box", "item_id": "kem_mut", "stock": 10},
+		{"x": 7, "y": 1, "furn_id": "wooden_shelf", "item_id": "nuoc_ngot_bich", "stock": 9},
+		{"x": 5, "y": 3, "furn_id": "rain_rack", "item_id": "keo_keo", "stock": 10}
+	]
 
 func _broadcast_initial_state() -> void:
 	EventBus.time_updated.emit(current_day, current_hour, current_minute, get_phase_label())
@@ -90,10 +113,31 @@ func get_phase_id() -> String:
 			return "NIGHT_SUMMARY"
 	return "OPEN_FOR_BUSINESS"
 
-func begin_owner_setup() -> void:
-	current_phase = StorePhase.OWNER_SETUP
-	EventBus.store_phase_changed.emit("OWNER_SETUP")
+func change_to_phase_scene(target_phase: StorePhase) -> void:
+	current_phase = target_phase
+	var path: String = SCENE_PATHS.get(target_phase, "res://scenes/main/main_game.tscn")
+	EventBus.store_phase_changed.emit(get_phase_id())
 	EventBus.time_updated.emit(current_day, current_hour, current_minute, get_phase_label())
+	if get_tree() and get_tree().current_scene and get_tree().current_scene.scene_file_path != path:
+		get_tree().change_scene_to_file(path)
+
+func begin_new_game_onboarding() -> void:
+	current_day = 1
+	store_level = 1
+	EconomyManager.reset_for_new_game()
+	_init_default_shelves()
+	_reset_daily_stats()
+	_roll_daily_weather()
+	change_to_phase_scene(StorePhase.OWNER_SETUP)
+
+func begin_owner_setup() -> void:
+	begin_new_game_onboarding()
+
+func continue_saved_game() -> void:
+	if load_game():
+		change_to_phase_scene(StorePhase.MORNING_PREP)
+	else:
+		begin_new_game_onboarding()
 
 func complete_owner_setup(p_owner: String, p_store: String, perk_id: String) -> void:
 	var clean_owner: String = p_owner.strip_edges()
@@ -108,17 +152,16 @@ func complete_owner_setup(p_owner: String, p_store: String, perk_id: String) -> 
 			EconomyManager.candy_jar += 10
 			EventBus.candy_jar_changed.emit(EconomyManager.candy_jar)
 		"capital":
-			EconomyManager.add_money(15000)
+			EconomyManager.money += 15000
+			EventBus.money_changed.emit(EconomyManager.money, 15000)
 		"stock":
 			for item_id in EconomyManager.warehouse_stock:
 				EconomyManager.warehouse_stock[item_id] += 6
 			EventBus.inventory_updated.emit()
 
 	_reset_daily_stats()
-	current_phase = StorePhase.MORNING_PREP
-	EventBus.store_phase_changed.emit("MORNING_PREP")
-	EventBus.time_updated.emit(current_day, current_hour, current_minute, get_phase_label())
-	EventBus.toast_requested.emit("🎉 Chào mừng %s khai trương %s! Hãy nhập hàng sáng sớm trước khi mở cửa." % [player_name, store_name], Color("#6B8E78"))
+	save_game()
+	change_to_phase_scene(StorePhase.MORNING_PREP)
 
 func skip_to_daytime_store() -> void:
 	has_completed_onboarding = true
@@ -128,19 +171,16 @@ func open_store_for_day() -> void:
 	current_hour = 7
 	current_minute = 0
 	is_rush_hour = false
-	current_phase = StorePhase.OPEN_FOR_BUSINESS
-	EventBus.store_phase_changed.emit("OPEN_FOR_BUSINESS")
-	EventBus.time_updated.emit(current_day, current_hour, current_minute, get_phase_label())
-	EventBus.toast_requested.emit("🔓 %s đã mở cửa đón khách ngày thứ %d!" % [store_name, current_day], Color("#6B8E78"))
+	save_game()
+	change_to_phase_scene(StorePhase.OPEN_FOR_BUSINESS)
 
 func close_store_for_night() -> void:
 	current_hour = 21
 	current_minute = 0
 	is_rush_hour = false
-	current_phase = StorePhase.NIGHT_SUMMARY
 	EventBus.rush_hour_changed.emit(false, "")
-	EventBus.store_phase_changed.emit("NIGHT_SUMMARY")
-	EventBus.time_updated.emit(current_day, current_hour, current_minute, get_phase_label())
+	save_game()
+	change_to_phase_scene(StorePhase.NIGHT_SUMMARY)
 
 func _reset_daily_stats() -> void:
 	daily_revenue = 0
@@ -199,10 +239,27 @@ func start_next_day() -> void:
 	is_rush_hour = false
 	_reset_daily_stats()
 	_roll_daily_weather()
-	current_phase = StorePhase.MORNING_PREP
+	save_game()
 	EventBus.weather_changed.emit(current_weather, weather_label)
-	EventBus.store_phase_changed.emit("MORNING_PREP")
-	EventBus.time_updated.emit(current_day, current_hour, current_minute, get_phase_label())
+	change_to_phase_scene(StorePhase.MORNING_PREP)
+
+func restock_all_saved_shelves_from_warehouse() -> int:
+	var total_added: int = 0
+	for s_dict in saved_shelves:
+		var f_id: String = s_dict.get("furn_id", "wooden_shelf")
+		var i_id: String = s_dict.get("item_id", "mi_tre_em")
+		var cur_stock: int = int(s_dict.get("stock", 0))
+		var furn: FurnitureData = EconomyManager.furniture_catalog.get(f_id)
+		var max_cap: int = furn.max_capacity if furn else 12
+		var space: int = max_cap - cur_stock
+		if space > 0:
+			var taken: int = EconomyManager.take_from_warehouse(i_id, space)
+			if taken > 0:
+				s_dict["stock"] = cur_stock + taken
+				total_added += taken
+	if total_added > 0:
+		save_game()
+	return total_added
 
 func toggle_time_speed() -> float:
 	if time_speed_multiplier == 1.0:
@@ -230,6 +287,7 @@ func try_upgrade_store_level() -> bool:
 	EconomyManager.spend_money(cost)
 	store_level += 1
 	var next_cfg: Dictionary = level_configs[store_level]
+	save_game()
 	EventBus.store_level_changed.emit(store_level, next_cfg["title"], next_cfg["reveal_radius"])
 	EventBus.stamp_effect_requested.emit("MỞ RỘNG CẤP %d" % store_level, Vector2(800, 420))
 	EventBus.toast_requested.emit("🎨 Màu nước đã loang rộng ra khu phố! Đạt %s!" % next_cfg["title"], Color("#6B8E78"))
@@ -250,13 +308,15 @@ func get_phase_label() -> String:
 	return "Đang mở cửa"
 
 func get_weather_forecast_advice() -> String:
+	var disc_item: ItemData = EconomyManager.item_catalog.get(daily_discount_item_id)
+	var disc_str: String = "  |  🏷️ Chợ sỉ hôm nay giảm giá 25%% mặt hàng: %s!" % disc_item.display_name if disc_item else ""
 	match current_weather:
 		"Sunny":
-			return "☀️ Dự báo hôm nay: TRƯA NẮNG VÀNG RỰC — Học sinh và người qua đường sẽ hỏi mua Kem Mút Đậu Xanh & Nước Ngọt Bịch rất nhiều! Hãy nhớ nhập đủ kho và châm đầy tủ kem nhé."
+			return "☀️ Dự báo hôm nay: TRƯA NẮNG VÀNG RỰC — Khách hỏi mua Kem Mút Đậu Xanh & Nước Ngọt Bịch rất nhiều!" + disc_str
 		"Rainy":
-			return "🌧️ Dự báo hôm nay: MƯA PHÙN ĐẦU NGÕ — Người đi đường rất cần Áo Mưa Giấy Tiện Lợi và Cà Phê / Mì Ly ấm bụng! Hãy ưu tiên nhập sỉ Áo Mưa."
+			return "🌧️ Dự báo hôm nay: MƯA PHÙN ĐẦU NGÕ — Người đi đường rất cần Áo Mưa Giấy Tiện Lợi và Cà Phê / Mì Ly!" + disc_str
 		_:
-			return "🍃 Dự báo hôm nay: GIÓ MÁT HIÊN NHÀ — Thời tiết dễ chịu, hàng xóm thích ngồi bàn trà đá gốc đa và mua đều các mặt hàng quà vặt, mì trẻ em, kẹo kéo."
+			return "🍃 Dự báo hôm nay: GIÓ MÁT HIÊN NHÀ — Hàng xóm thích ngồi bàn trà đá gốc đa và mua quà vặt đều đặn." + disc_str
 
 func get_daily_story_vignette() -> String:
 	var stories: Array[String] = [
@@ -283,3 +343,123 @@ func _roll_daily_weather() -> void:
 	else:
 		current_weather = "Rainy"
 		weather_label = "Mưa phùn đầu ngõ"
+
+	var item_keys: Array = ["mi_tre_em", "kem_mut", "nuoc_ngot_bich", "keo_keo", "ao_mua", "ca_phe_goi"]
+	daily_discount_item_id = item_keys.pick_random()
+
+# ==============================================================================
+# HỆ THỐNG LƯU & TẢI GAME (SAVE / LOAD PERSISTENCE)
+# ==============================================================================
+func has_save_file() -> bool:
+	return FileAccess.file_exists(SAVE_FILE_PATH)
+
+func get_save_summary() -> Dictionary:
+	if not has_save_file():
+		return {}
+	var file := FileAccess.open(SAVE_FILE_PATH, FileAccess.READ)
+	if file == null:
+		return {}
+	var parsed: Variant = JSON.parse_string(file.get_as_text())
+	file.close()
+	if parsed is Dictionary:
+		return parsed
+	return {}
+
+func save_game() -> void:
+	var prices_dict: Dictionary = {}
+	for k in EconomyManager.item_catalog:
+		var it: ItemData = EconomyManager.item_catalog[k]
+		prices_dict[k] = it.retail_price
+
+	var debts_arr: Array[Dictionary] = []
+	for rec: DebtRecord in EconomyManager.debt_records:
+		debts_arr.append({
+			"id": rec.record_id,
+			"name": rec.customer_name,
+			"role": rec.customer_role,
+			"amount": rec.amount,
+			"note": rec.note,
+			"day": rec.day_borrowed,
+			"paid": rec.is_paid
+		})
+
+	var data: Dictionary = {
+		"player_name": player_name,
+		"store_name": store_name,
+		"has_completed_onboarding": has_completed_onboarding,
+		"current_day": current_day,
+		"store_level": store_level,
+		"money": EconomyManager.money,
+		"reputation": EconomyManager.reputation,
+		"candy_jar": EconomyManager.candy_jar,
+		"warehouse_stock": EconomyManager.warehouse_stock.duplicate(),
+		"item_prices": prices_dict,
+		"saved_shelves": saved_shelves.duplicate(true),
+		"debts": debts_arr
+	}
+	var file := FileAccess.open(SAVE_FILE_PATH, FileAccess.WRITE)
+	if file:
+		file.store_string(JSON.stringify(data, "\t"))
+		file.close()
+
+func load_game() -> bool:
+	var data: Dictionary = get_save_summary()
+	if data.is_empty():
+		return false
+
+	player_name = str(data.get("player_name", "Bà Ba"))
+	store_name = str(data.get("store_name", "TẠP HÓA MÀU NƯỚC"))
+	has_completed_onboarding = bool(data.get("has_completed_onboarding", true))
+	current_day = maxi(1, int(data.get("current_day", 1)))
+	store_level = clampi(int(data.get("store_level", 1)), 1, 4)
+
+	EconomyManager.money = int(data.get("money", 45000))
+	EconomyManager.reputation = int(data.get("reputation", 15))
+	EconomyManager.candy_jar = int(data.get("candy_jar", 12))
+
+	if data.has("warehouse_stock") and data["warehouse_stock"] is Dictionary:
+		var ws: Dictionary = data["warehouse_stock"]
+		for k in ws:
+			EconomyManager.warehouse_stock[str(k)] = int(ws[k])
+
+	if data.has("item_prices") and data["item_prices"] is Dictionary:
+		var ip: Dictionary = data["item_prices"]
+		for k in ip:
+			if EconomyManager.item_catalog.has(str(k)):
+				EconomyManager.item_catalog[str(k)].retail_price = int(ip[k])
+
+	if data.has("saved_shelves") and data["saved_shelves"] is Array:
+		saved_shelves.clear()
+		for entry in data["saved_shelves"]:
+			if entry is Dictionary:
+				saved_shelves.append({
+					"x": int(entry.get("x", 1)),
+					"y": int(entry.get("y", 1)),
+					"furn_id": str(entry.get("furn_id", "wooden_shelf")),
+					"item_id": str(entry.get("item_id", "mi_tre_em")),
+					"stock": int(entry.get("stock", 8))
+				})
+
+	if data.has("debts") and data["debts"] is Array:
+		EconomyManager.debt_records.clear()
+		var max_id: int = 1
+		for d in data["debts"]:
+			if d is Dictionary:
+				var rid: int = int(d.get("id", max_id))
+				max_id = maxi(max_id, rid + 1)
+				var rec := DebtRecord.new(
+					rid,
+					str(d.get("name", "Hàng xóm")),
+					str(d.get("role", "Khách quen")),
+					int(d.get("amount", 5000)),
+					str(d.get("note", "")),
+					int(d.get("day", 1)),
+					Color("#6B8E78")
+				)
+				rec.is_paid = bool(d.get("paid", false))
+				EconomyManager.debt_records.append(rec)
+		EconomyManager._next_debt_id = max_id
+
+	_reset_daily_stats()
+	_roll_daily_weather()
+	return true

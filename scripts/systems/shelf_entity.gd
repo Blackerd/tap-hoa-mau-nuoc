@@ -37,10 +37,16 @@ func setup(cell: Vector2i, furn_data: FurnitureData, assigned_item: String, init
 	current_stock = clampi(initial_stock, 0, max_capacity)
 	queue_redraw()
 
+func _sync_parent_world() -> void:
+	var p: Node = get_parent()
+	if p and p.get_parent() and p.get_parent().has_method("sync_shelves_to_game_manager"):
+		p.get_parent().sync_shelves_to_game_manager()
+
 func take_one_item() -> bool:
 	if current_stock <= 0:
 		return false
 	current_stock -= 1
+	_sync_parent_world()
 	play_bounce()
 	queue_redraw()
 	return true
@@ -53,6 +59,7 @@ func restock_from_warehouse() -> int:
 	var added: int = EconomyManager.take_from_warehouse(item_id, space_left)
 	if added > 0:
 		current_stock += added
+		_sync_parent_world()
 		play_bounce()
 		queue_redraw()
 		var item: ItemData = EconomyManager.item_catalog.get(item_id)
@@ -73,6 +80,7 @@ func cycle_assigned_item() -> void:
 	var next_idx: int = (idx + 1) % keys.size()
 	item_id = keys[next_idx]
 	restock_from_warehouse()
+	_sync_parent_world()
 	EventBus.inventory_updated.emit()
 	queue_redraw()
 

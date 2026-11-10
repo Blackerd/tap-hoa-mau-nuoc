@@ -96,6 +96,7 @@ var _selected_furn_idx: int = 0
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	GameManager.current_phase = GameManager.StorePhase.OPEN_FOR_BUSINESS
 	_build_responsive_skeleton()
 	_build_floating_ledger_notepad()
 	_build_checkout_drawer()
@@ -103,7 +104,7 @@ func _ready() -> void:
 	_build_multi_scene_modals()
 	_connect_signals()
 	_refresh_all_ui()
-	_on_store_phase_changed(GameManager.get_phase_id())
+	_on_store_phase_changed("OPEN_FOR_BUSINESS")
 
 func _process(_delta: float) -> void:
 	if checkout_panel and checkout_panel.visible:
@@ -328,6 +329,15 @@ func _build_responsive_skeleton() -> void:
 	bot_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
 	bot_hbox.add_theme_constant_override("separation", 8)
 	bot_panel.add_child(bot_hbox)
+
+	var btn_menu_home := Button.new()
+	btn_menu_home.text = "📖 Menu"
+	_apply_button_theme(btn_menu_home, PAPER_CREAM)
+	btn_menu_home.pressed.connect(func() -> void:
+		GameManager.save_game()
+		GameManager.change_to_phase_scene(GameManager.StorePhase.STORY_INTRO)
+	)
+	bot_hbox.add_child(btn_menu_home)
 
 	btn_toggle_ledger = Button.new()
 	btn_toggle_ledger.text = "📓 Sổ Cái & Sổ Nợ"

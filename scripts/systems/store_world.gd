@@ -61,10 +61,35 @@ func _setup_astar_grid() -> void:
 			astar_grid.set_point_solid(Vector2i(cx, cy), true)
 
 func _spawn_starter_shelves() -> void:
-	place_shelf_at(Vector2i(1, 1), "wooden_shelf", "mi_tre_em", 10, true)
-	place_shelf_at(Vector2i(4, 1), "ice_box", "kem_mut", 10, true)
-	place_shelf_at(Vector2i(7, 1), "wooden_shelf", "nuoc_ngot_bich", 9, true)
-	place_shelf_at(Vector2i(5, 3), "rain_rack", "keo_keo", 10, true)
+	if reveal_overlay and reveal_overlay.material is ShaderMaterial:
+		var mat: ShaderMaterial = reveal_overlay.material
+		mat.set_shader_parameter("reveal_radius", GameManager.get_reveal_radius())
+
+	if GameManager.saved_shelves.is_empty():
+		GameManager._init_default_shelves()
+
+	var initial_list: Array[Dictionary] = GameManager.saved_shelves.duplicate(true)
+	for entry in initial_list:
+		var cx: int = int(entry.get("x", 1))
+		var cy: int = int(entry.get("y", 1))
+		var fid: String = str(entry.get("furn_id", "wooden_shelf"))
+		var iid: String = str(entry.get("item_id", "mi_tre_em"))
+		var stk: int = int(entry.get("stock", 8))
+		place_shelf_at(Vector2i(cx, cy), fid, iid, stk, true)
+
+func sync_shelves_to_game_manager() -> void:
+	var list: Array[Dictionary] = []
+	for cell_key in shelves_by_cell:
+		var s: ShelfEntity = shelves_by_cell[cell_key]
+		if is_instance_valid(s):
+			list.append({
+				"x": s.grid_cell.x,
+				"y": s.grid_cell.y,
+				"furn_id": s.furniture_id,
+				"item_id": s.item_id,
+				"stock": s.current_stock
+			})
+	GameManager.saved_shelves = list
 
 func _init_rain_particles() -> void:
 	for i in range(48):
@@ -226,8 +251,10 @@ func place_shelf_at(cell: Vector2i, furn_id: String, item_id: String, initial_st
 
 	shelves_by_cell[cell] = shelf
 	astar_grid.set_point_solid(cell, true)
+	sync_shelves_to_game_manager()
 
 	if not is_free_starter:
+		GameManager.save_game()
 		EventBus.toast_requested.emit("🔨 Đã đặt %s! Chạm 1 lần để châm hàng, Chạm đúp (2 lần) để đổi món." % furn.display_name, Color("#6B8E78"))
 	return true
 

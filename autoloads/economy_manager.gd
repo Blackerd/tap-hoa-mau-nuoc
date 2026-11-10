@@ -19,6 +19,28 @@ func _ready() -> void:
 	_setup_initial_debts()
 	call_deferred("_emit_initial")
 
+func reset_for_new_game() -> void:
+	money = 45000
+	reputation = 15
+	candy_jar = 12
+	for k in item_catalog:
+		var it: ItemData = item_catalog[k]
+		var raw_base: Variant = it.get("base_price")
+		it.retail_price = int(raw_base) if raw_base != null and int(raw_base) > 0 else (it.wholesale_cost * 2)
+		warehouse_stock[k] = 10
+	debt_records.clear()
+	_next_debt_id = 1
+	_setup_initial_debts()
+	_emit_initial()
+
+func get_effective_wholesale_cost(item_id: String) -> int:
+	if not item_catalog.has(item_id):
+		return 1000
+	var item: ItemData = item_catalog[item_id]
+	if GameManager.daily_discount_item_id == item_id:
+		return int(round(float(item.wholesale_cost) * 0.75 / 100.0)) * 100
+	return item.wholesale_cost
+
 func _emit_initial() -> void:
 	EventBus.money_changed.emit(money, 0)
 	EventBus.reputation_changed.emit(reputation, 0)
@@ -178,14 +200,15 @@ func buy_wholesale_pack(item_id: String, pack_size: int = 8) -> bool:
 	if not item_catalog.has(item_id):
 		return false
 	var item: ItemData = item_catalog[item_id]
-	var total_cost: int = item.wholesale_cost * pack_size
+	var unit_cost: int = get_effective_wholesale_cost(item_id)
+	var total_cost: int = unit_cost * pack_size
 	if not spend_money(total_cost):
 		EventBus.toast_requested.emit("Không đủ vốn nhập sỉ (Cần %s đ)!" % format_vnd(total_cost), Color("#C84B31"))
 		return false
 
 	warehouse_stock[item_id] = warehouse_stock.get(item_id, 0) + pack_size
 	EventBus.inventory_updated.emit()
-	EventBus.toast_requested.emit("📦 Đã nhập +%d %s vào kho!" % [pack_size, item.display_name], Color("#6B8E78"))
+	EventBus.toast_requested.emit("📦 Đã nhập +%d %s vào kho (-%s đ)!" % [pack_size, item.display_name, format_vnd(total_cost)], Color("#6B8E78"))
 	return true
 
 func refill_candy_jar() -> bool:
