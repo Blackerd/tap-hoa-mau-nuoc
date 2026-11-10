@@ -78,6 +78,15 @@ func _run_e2e_suite() -> void:
 	if setup_scene:
 		var inp_owner: LineEdit = setup_scene.get("input_owner_name")
 		var inp_store: LineEdit = setup_scene.get("input_store_name")
+		if inp_owner and setup_scene.has_method("_open_ingame_kb"):
+			inp_owner.text = ""
+			setup_scene.call("_open_ingame_kb", inp_owner, "NHẬP TÊN / CÁCH XƯNG HÔ CHỦ QUÁN")
+			for ch in ["D", "D", "O", "O", "N", "G", " ", "D", "U", "O", "N", "G", "W"]:
+				setup_scene.call("_on_kb_key", ch)
+			await _capture_step("03b_scene2_fullscreen_telex_keyboard", "Scene 2: Bàn Phím Full-Screen 1244x688 Tự Ghép Dấu Telex (ĐÔNG DƯƠNG)")
+			var kb_mod: Control = setup_scene.get("kb_modal")
+			if kb_mod:
+				kb_mod.visible = false
 		if inp_owner:
 			inp_owner.text = "Dì Chánh"
 		if inp_store:
@@ -159,6 +168,22 @@ func _run_e2e_suite() -> void:
 		if ui_ctrl.has_method("_on_toggle_build_pressed"):
 			ui_ctrl.call("_on_toggle_build_pressed")
 		await _capture_step("10_scene4_build_mode", "Scene 4: Chế Độ Đóng Kệ & Mở Rộng Quầy")
+
+	# Open International-Standard Settings Modal
+	var ah_node: Node = GameManager._ensure_audio_haptic()
+	if ah_node:
+		ah_node.set("bgm_enabled", true)
+		ah_node.set("bgm_volume", 0.75)
+		ah_node.set("sfx_enabled", true)
+		ah_node.set("sfx_volume", 0.90)
+		ah_node.set("haptic_enabled", true)
+		if ah_node.has_method("save_settings"):
+			ah_node.call("save_settings")
+		if ah_node.has_method("_update_bgm_state"):
+			ah_node.call("_update_bgm_state")
+	GameManager.open_settings()
+	await _capture_step("12_settings_modal", "Scene Cài Đặt: Âm Thanh Độc Bản, Nhạc Nền, Rung Haptics & Quản Lý Sổ")
+	GameManager.close_settings()
 
 	# ---------------------------------------------------------
 	# STEP 5: Scene 5 — Night Home & Daily Summary (Đóng Cửa Về Nhà)

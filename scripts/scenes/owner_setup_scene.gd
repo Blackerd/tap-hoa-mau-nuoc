@@ -361,17 +361,29 @@ func _build_ui() -> void:
 
 	var btn_back := Button.new()
 	btn_back.text = "<< Quay Lại Bìa Sổ"
-	btn_back.custom_minimum_size = Vector2(210, 54)
+	btn_back.custom_minimum_size = Vector2(200, 54)
+	btn_back.set_meta("sfx_id", "page_flip")
 	_apply_btn(btn_back, TEX_BTN_CREAM, 16)
 	btn_back.pressed.connect(func() -> void:
 		GameManager.change_to_phase_scene(GameManager.StorePhase.STORY_INTRO)
 	)
 	bot_row.add_child(btn_back)
 
+	var btn_settings := Button.new()
+	btn_settings.text = "Cài Đặt"
+	btn_settings.custom_minimum_size = Vector2(145, 54)
+	_apply_btn(btn_settings, TEX_BTN_CREAM, 16)
+	btn_settings.pressed.connect(func() -> void:
+		GameManager.open_settings()
+	)
+	bot_row.add_child(btn_settings)
+
 	var btn_confirm := Button.new()
 	btn_confirm.text = "ĐÓNG DẤU KHAI TRƯƠNG & ĐI CHỢ ĐẦU MỐI SÁNG SỚM >>"
 	btn_confirm.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	btn_confirm.custom_minimum_size = Vector2(0, 54)
+	btn_confirm.set_meta("sfx_id", "rubber_stamp")
+	btn_confirm.set_meta("haptic_strength", "heavy")
 	_apply_btn(btn_confirm, TEX_BTN_GREEN, 18)
 	btn_confirm.pressed.connect(func() -> void:
 		GameManager.complete_owner_setup(input_owner_name.text, input_store_name.text, selected_perk_id)
@@ -383,68 +395,103 @@ func _build_ui() -> void:
 func _build_ingame_keyboard() -> void:
 	kb_modal = PanelContainer.new()
 	kb_modal.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	kb_modal.custom_minimum_size = Vector2(920, 460)
+	kb_modal.custom_minimum_size = Vector2(1244, 688)
 	kb_modal.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	kb_modal.grow_vertical = Control.GROW_DIRECTION_BOTH
-	kb_modal.add_theme_stylebox_override("panel", _style_tex_panel(TEX_CARD_BROWN, 28, 22))
+	kb_modal.add_theme_stylebox_override("panel", _style_tex_panel(TEX_CARD_BROWN, 24, 16))
 	kb_modal.visible = false
 	add_child(kb_modal)
 
 	var v := VBoxContainer.new()
-	v.add_theme_constant_override("separation", 10)
+	v.add_theme_constant_override("separation", 8)
 	kb_modal.add_child(v)
 
+	var top_bar := HBoxContainer.new()
+	top_bar.add_theme_constant_override("separation", 12)
+	v.add_child(top_bar)
+
 	kb_title_lbl = Label.new()
-	kb_title_lbl.text = "BÀN PHÍM TRONG GAME (KHÔNG BỊ CHE MÀN HÌNH DỌC)"
-	kb_title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	kb_title_lbl.text = "NHẬP TÊN (BỘ GÕ TELEX TIẾNG VIỆT TỰ ĐỘNG)"
+	kb_title_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	kb_title_lbl.add_theme_color_override("font_color", STAMP_RED)
-	kb_title_lbl.add_theme_font_size_override("font_size", 20)
-	v.add_child(kb_title_lbl)
+	kb_title_lbl.add_theme_font_size_override("font_size", 21)
+	top_bar.add_child(kb_title_lbl)
+
+	var telex_hint := Label.new()
+	telex_hint.text = "Gõ kiểu Telex: DD=Đ | AA=Â | AW=Ă | EE=Ê | OO=Ô | OW/W=Ơ/Ư | S/F/R/X/J = Sắc/Huyền/Hỏi/Ngã/Nặng"
+	telex_hint.add_theme_color_override("font_color", SAGE_GREEN.darkened(0.28))
+	telex_hint.add_theme_font_size_override("font_size", 15)
+	top_bar.add_child(telex_hint)
 
 	var preview_box := PanelContainer.new()
-	preview_box.add_theme_stylebox_override("panel", _style_box(PAPER_CREAM, INK_DARK, 2))
+	preview_box.custom_minimum_size = Vector2(0, 62)
+	preview_box.add_theme_stylebox_override("panel", _style_box(PAPER_CREAM, STAMP_RED, 3))
 	v.add_child(preview_box)
 
 	kb_preview_lbl = Label.new()
 	kb_preview_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	kb_preview_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	kb_preview_lbl.add_theme_color_override("font_color", INK_DARK)
-	kb_preview_lbl.add_theme_font_size_override("font_size", 22)
+	kb_preview_lbl.add_theme_font_size_override("font_size", 28)
 	preview_box.add_child(kb_preview_lbl)
+
+	# Thanh gợi ý từ ghép nhanh 1 chạm
+	var chip_row := HBoxContainer.new()
+	chip_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	chip_row.add_theme_constant_override("separation", 8)
+	v.add_child(chip_row)
+
+	var chip_words: Array[String] = ["BÀ ", "CÔ ", "CHÚ ", "DÌ ", "ANH ", "CHỊ ", "TẠP HÓA ", "TIỆM ", "KÝ ỨC", "GỐC ĐA"]
+	for cw in chip_words:
+		var cbtn := Button.new()
+		cbtn.text = "+" + cw.strip_edges()
+		cbtn.custom_minimum_size = Vector2(106, 46)
+		cbtn.set_meta("sfx_id", "key_type")
+		_apply_btn(cbtn, TEX_BTN_YELLOW, 15)
+		var w_val: String = cw
+		cbtn.pressed.connect(func() -> void:
+			if kb_target_input:
+				if kb_target_input.text != "" and not kb_target_input.text.ends_with(" "):
+					kb_target_input.text += " "
+				kb_target_input.text += w_val
+				kb_preview_lbl.text = kb_target_input.text
+				_update_live_preview()
+		)
+		chip_row.add_child(cbtn)
 
 	var rows: Array[Array] = [
 		["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
 		["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
 		["A", "S", "D", "F", "G", "H", "J", "K", "L", "Đ"],
-		["Z", "X", "C", "V", "B", "N", "M", "Ấ", "Ơ", "Ư"]
+		["Z", "X", "C", "V", "B", "N", "M", "Ă", "Â", "Ơ"]
 	]
 	for r in rows:
 		var h := HBoxContainer.new()
 		h.alignment = BoxContainer.ALIGNMENT_CENTER
-		h.add_theme_constant_override("separation", 6)
+		h.add_theme_constant_override("separation", 8)
 		v.add_child(h)
 		for ch in r:
 			var kbtn := Button.new()
 			kbtn.text = ch
-			kbtn.custom_minimum_size = Vector2(76, 48)
-			_apply_btn(kbtn, TEX_BTN_CREAM, 17)
+			kbtn.custom_minimum_size = Vector2(110, 68)
+			kbtn.set_meta("sfx_id", "key_type")
+			_apply_btn(kbtn, TEX_BTN_CREAM, 24)
 			var c_str: String = ch
 			kbtn.pressed.connect(func() -> void:
-				if kb_target_input:
-					kb_target_input.text += c_str
-					kb_preview_lbl.text = kb_target_input.text
-					_update_live_preview()
+				_on_kb_key(c_str)
 			)
 			h.add_child(kbtn)
 
 	var act_row := HBoxContainer.new()
 	act_row.alignment = BoxContainer.ALIGNMENT_CENTER
-	act_row.add_theme_constant_override("separation", 10)
+	act_row.add_theme_constant_override("separation", 12)
 	v.add_child(act_row)
 
 	var btn_space := Button.new()
 	btn_space.text = "Dấu Cách (Space)"
-	btn_space.custom_minimum_size = Vector2(220, 50)
-	_apply_btn(btn_space, TEX_BTN_CREAM, 16)
+	btn_space.custom_minimum_size = Vector2(280, 62)
+	btn_space.set_meta("sfx_id", "key_type")
+	_apply_btn(btn_space, TEX_BTN_CREAM, 19)
 	btn_space.pressed.connect(func() -> void:
 		if kb_target_input:
 			kb_target_input.text += " "
@@ -455,8 +502,9 @@ func _build_ingame_keyboard() -> void:
 
 	var btn_bs := Button.new()
 	btn_bs.text = "<< Xóa 1 Chữ"
-	btn_bs.custom_minimum_size = Vector2(160, 50)
-	_apply_btn(btn_bs, TEX_BTN_PINK, 16)
+	btn_bs.custom_minimum_size = Vector2(220, 62)
+	btn_bs.set_meta("sfx_id", "key_type")
+	_apply_btn(btn_bs, TEX_BTN_PINK, 19)
 	btn_bs.pressed.connect(func() -> void:
 		if kb_target_input and kb_target_input.text.length() > 0:
 			kb_target_input.text = kb_target_input.text.substr(0, kb_target_input.text.length() - 1)
@@ -467,8 +515,9 @@ func _build_ingame_keyboard() -> void:
 
 	var btn_clear := Button.new()
 	btn_clear.text = "Xóa Hết"
-	btn_clear.custom_minimum_size = Vector2(130, 50)
-	_apply_btn(btn_clear, TEX_BTN_PINK, 16)
+	btn_clear.custom_minimum_size = Vector2(180, 62)
+	btn_clear.set_meta("sfx_id", "key_type")
+	_apply_btn(btn_clear, TEX_BTN_PINK, 19)
 	btn_clear.pressed.connect(func() -> void:
 		if kb_target_input:
 			kb_target_input.text = ""
@@ -478,9 +527,11 @@ func _build_ingame_keyboard() -> void:
 	act_row.add_child(btn_clear)
 
 	var btn_done := Button.new()
-	btn_done.text = "Xong (Lưu Tên) >>"
-	btn_done.custom_minimum_size = Vector2(220, 50)
-	_apply_btn(btn_done, TEX_BTN_GREEN, 17)
+	btn_done.text = "XONG (LƯU TÊN) >>"
+	btn_done.custom_minimum_size = Vector2(360, 62)
+	btn_done.set_meta("sfx_id", "rubber_stamp")
+	btn_done.set_meta("haptic_strength", "medium")
+	_apply_btn(btn_done, TEX_BTN_GREEN, 20)
 	btn_done.pressed.connect(func() -> void:
 		kb_modal.visible = false
 		_update_live_preview()
@@ -491,7 +542,15 @@ func _open_ingame_kb(target: LineEdit, title_text: String) -> void:
 	kb_target_input = target
 	kb_title_lbl.text = title_text
 	kb_preview_lbl.text = target.text
+	GameManager.play_sfx("page_flip")
+	GameManager.trigger_haptic("medium")
 	kb_modal.visible = true
+
+func _on_kb_key(c_str: String) -> void:
+	if kb_target_input:
+		kb_target_input.text = GameManager.apply_telex_key(kb_target_input.text, c_str)
+		kb_preview_lbl.text = kb_target_input.text
+		_update_live_preview()
 
 func _select_perk(perk_id: String) -> void:
 	selected_perk_id = perk_id

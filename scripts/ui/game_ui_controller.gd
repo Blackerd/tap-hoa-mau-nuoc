@@ -356,15 +356,24 @@ func _build_responsive_skeleton() -> void:
 	btn_speed.icon = ICON_CLOCK
 	btn_speed.expand_icon = true
 	btn_speed.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	btn_speed.custom_minimum_size = Vector2(135, 40)
+	btn_speed.custom_minimum_size = Vector2(125, 40)
 	_apply_button_theme(btn_speed, PAPER_CREAM, INK_DARK, INK_DARK, 14)
 	btn_speed.pressed.connect(_on_toggle_speed)
 	tr_util_row.add_child(btn_speed)
 
+	var btn_settings_hud := Button.new()
+	btn_settings_hud.text = "Cài Đặt"
+	btn_settings_hud.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	btn_settings_hud.custom_minimum_size = Vector2(96, 40)
+	_apply_button_theme(btn_settings_hud, PAPER_CREAM, INK_DARK, INK_DARK, 14)
+	btn_settings_hud.pressed.connect(func() -> void: GameManager.open_settings())
+	tr_util_row.add_child(btn_settings_hud)
+
 	var btn_menu_home := Button.new()
-	btn_menu_home.text = "Bìa Sổ (Menu)"
+	btn_menu_home.text = "Bìa Sổ"
 	btn_menu_home.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	btn_menu_home.custom_minimum_size = Vector2(135, 40)
+	btn_menu_home.custom_minimum_size = Vector2(96, 40)
+	btn_menu_home.set_meta("sfx_id", "page_flip")
 	_apply_button_theme(btn_menu_home, PAPER_CREAM, INK_DARK, INK_DARK, 14)
 	btn_menu_home.pressed.connect(func() -> void:
 		GameManager.save_game()
@@ -404,6 +413,7 @@ func _build_responsive_skeleton() -> void:
 	btn_toggle_ledger.icon = ICON_MONEY
 	btn_toggle_ledger.expand_icon = true
 	btn_toggle_ledger.custom_minimum_size = Vector2(180, 50)
+	btn_toggle_ledger.set_meta("sfx_id", "page_flip")
 	_apply_button_theme(btn_toggle_ledger, PAPER_WARM, INK_DARK, INK_DARK, 16)
 	btn_toggle_ledger.pressed.connect(_toggle_ledger_panel)
 	bot_hbox.add_child(btn_toggle_ledger)
@@ -420,6 +430,7 @@ func _build_responsive_skeleton() -> void:
 	btn_refill_candy.icon = ICON_CANDY
 	btn_refill_candy.expand_icon = true
 	btn_refill_candy.custom_minimum_size = Vector2(195, 50)
+	btn_refill_candy.set_meta("sfx_id", "candy_jar")
 	_apply_button_theme(btn_refill_candy, PAPER_CREAM, INK_DARK, INK_DARK, 16)
 	btn_refill_candy.pressed.connect(func() -> void: EconomyManager.refill_candy_jar())
 	bot_hbox.add_child(btn_refill_candy)
@@ -434,6 +445,8 @@ func _build_responsive_skeleton() -> void:
 	btn_close_night = Button.new()
 	btn_close_night.text = "Đóng Tiệm Về Nhà"
 	btn_close_night.custom_minimum_size = Vector2(185, 50)
+	btn_close_night.set_meta("sfx_id", "wind_chime")
+	btn_close_night.set_meta("haptic_strength", "medium")
 	_apply_button_theme(btn_close_night, Color("#D5E8D4"), INK_DARK, SAGE_GREEN, 16)
 	btn_close_night.pressed.connect(func() -> void: GameManager.close_store_for_night())
 	bot_hbox.add_child(btn_close_night)
@@ -1025,6 +1038,7 @@ func _build_floating_ledger_notepad() -> void:
 	btn_tab_inv.text = "Nhập Sỉ & Giá Bán"
 	btn_tab_inv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	btn_tab_inv.custom_minimum_size = Vector2(0, 44)
+	btn_tab_inv.set_meta("sfx_id", "page_flip")
 	_apply_button_theme(btn_tab_inv, PAPER_WARM, INK_DARK, INK_DARK, 15)
 	btn_tab_inv.pressed.connect(func() -> void:
 		current_ledger_tab = "inventory"
@@ -1036,6 +1050,7 @@ func _build_floating_ledger_notepad() -> void:
 	btn_tab_debt.text = "Sổ Ghi Nợ"
 	btn_tab_debt.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	btn_tab_debt.custom_minimum_size = Vector2(0, 44)
+	btn_tab_debt.set_meta("sfx_id", "page_flip")
 	_apply_button_theme(btn_tab_debt, Color("#FADBD8"), INK_DARK, INK_DARK, 15)
 	btn_tab_debt.pressed.connect(func() -> void:
 		current_ledger_tab = "debt"
@@ -1159,6 +1174,8 @@ func _build_checkout_drawer() -> void:
 	btn_exact.expand_icon = true
 	btn_exact.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	btn_exact.custom_minimum_size = Vector2(0, 46)
+	btn_exact.set_meta("sfx_id", "cash_coin")
+	btn_exact.set_meta("haptic_strength", "medium")
 	_apply_button_theme(btn_exact, Color("#D5E8D4"), INK_DARK, SAGE_GREEN, 14)
 	btn_exact.pressed.connect(func() -> void: _resolve_active_customer("exact"))
 	btn_row.add_child(btn_exact)
@@ -1169,6 +1186,8 @@ func _build_checkout_drawer() -> void:
 	btn_candy.expand_icon = true
 	btn_candy.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	btn_candy.custom_minimum_size = Vector2(0, 46)
+	btn_candy.set_meta("sfx_id", "candy_jar")
+	btn_candy.set_meta("haptic_strength", "medium")
 	_apply_button_theme(btn_candy, Color("#F9E79F"), INK_DARK, OCHRE_GOLD, 14)
 	btn_candy.pressed.connect(func() -> void: _resolve_active_customer("candy"))
 	btn_row.add_child(btn_candy)
@@ -1179,6 +1198,8 @@ func _build_checkout_drawer() -> void:
 	btn_credit.expand_icon = true
 	btn_credit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	btn_credit.custom_minimum_size = Vector2(0, 46)
+	btn_credit.set_meta("sfx_id", "rubber_stamp")
+	btn_credit.set_meta("haptic_strength", "heavy")
 	_apply_button_theme(btn_credit, Color("#FADBD8"), INK_DARK, STAMP_RED, 14)
 	btn_credit.pressed.connect(func() -> void: _resolve_active_customer("credit"))
 	btn_row.add_child(btn_credit)
@@ -1371,6 +1392,7 @@ func _rebuild_ledger_lists() -> void:
 			var pack_cost: int = item.wholesale_cost * 8
 			btn_buy.text = "Nhập +8 (%sđ)" % EconomyManager.format_vnd(pack_cost)
 			btn_buy.custom_minimum_size = Vector2(0, 40)
+			btn_buy.set_meta("sfx_id", "cash_coin")
 			_apply_button_theme(btn_buy, Color("#D5E8D4"), INK_DARK, SAGE_GREEN, 14)
 			btn_buy.pressed.connect(func() -> void: EconomyManager.buy_wholesale_pack(item.id, 8))
 			act_row.add_child(btn_buy)
@@ -1428,6 +1450,8 @@ func _rebuild_ledger_lists() -> void:
 				var btn_collect := Button.new()
 				btn_collect.text = "ĐÓNG DẤU: ĐÃ THU (%s đ)" % EconomyManager.format_vnd(rec.amount)
 				btn_collect.custom_minimum_size = Vector2(0, 42)
+				btn_collect.set_meta("sfx_id", "rubber_stamp")
+				btn_collect.set_meta("haptic_strength", "heavy")
 				_apply_button_theme(btn_collect, Color("#FADBD8"), STAMP_RED, STAMP_RED, 14)
 				var rid: int = rec.record_id
 				btn_collect.pressed.connect(func() -> void:

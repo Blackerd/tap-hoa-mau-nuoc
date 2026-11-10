@@ -203,6 +203,7 @@ func _build_ui() -> void:
 	btn_prev_page = Button.new()
 	btn_prev_page.text = "<< Trang trước"
 	btn_prev_page.custom_minimum_size = Vector2(165, 48)
+	btn_prev_page.set_meta("sfx_id", "page_flip")
 	_apply_btn(btn_prev_page, TEX_BTN_CREAM, 16)
 	btn_prev_page.pressed.connect(func() -> void:
 		current_page = maxi(0, current_page - 1)
@@ -218,6 +219,7 @@ func _build_ui() -> void:
 	btn_next_page = Button.new()
 	btn_next_page.text = "Trang tiếp >>"
 	btn_next_page.custom_minimum_size = Vector2(165, 48)
+	btn_next_page.set_meta("sfx_id", "page_flip")
 	_apply_btn(btn_next_page, TEX_BTN_CREAM, 16)
 	btn_next_page.pressed.connect(func() -> void:
 		current_page = mini(story_pages.size() - 1, current_page + 1)
@@ -225,10 +227,10 @@ func _build_ui() -> void:
 	)
 	page_nav_row.add_child(btn_next_page)
 
-	# Dòng Nút Hành Động Chính (Tiếp Tục Save Cũ hoặc Khai Trương Quán Mới)
+	# Dòng Nút Hành Động Chính (Tiếp Tục Save Cũ, Khai Trương Quán Mới, Cài Đặt)
 	var action_row := HBoxContainer.new()
 	action_row.alignment = BoxContainer.ALIGNMENT_CENTER
-	action_row.add_theme_constant_override("separation", 18)
+	action_row.add_theme_constant_override("separation", 14)
 	vbox.add_child(action_row)
 
 	var save_info: Dictionary = GameManager.get_save_summary()
@@ -242,17 +244,28 @@ func _build_ui() -> void:
 		btn_continue.text = "Tiếp Tục: %s (%s — Ngày %d | %s đ) >>" % [
 			s_store, s_owner, s_day, EconomyManager.format_vnd(s_money)
 		]
-		btn_continue.custom_minimum_size = Vector2(510, 56)
-		_apply_btn(btn_continue, TEX_BTN_GREEN, 17)
+		btn_continue.custom_minimum_size = Vector2(450, 56)
+		btn_continue.set_meta("sfx_id", "rubber_stamp")
+		btn_continue.set_meta("haptic_strength", "medium")
+		_apply_btn(btn_continue, TEX_BTN_GREEN, 16)
 		btn_continue.pressed.connect(func() -> void: GameManager.continue_saved_game())
 		action_row.add_child(btn_continue)
 
 	var btn_new_game := Button.new()
 	btn_new_game.text = "Khai Trương Tiệm Mới (Đặt Tên Chủ & Tên Quán) >>"
-	btn_new_game.custom_minimum_size = Vector2(490, 56)
-	_apply_btn(btn_new_game, TEX_BTN_YELLOW, 18)
+	btn_new_game.custom_minimum_size = Vector2(450, 56)
+	btn_new_game.set_meta("sfx_id", "rubber_stamp")
+	btn_new_game.set_meta("haptic_strength", "medium")
+	_apply_btn(btn_new_game, TEX_BTN_YELLOW, 17)
 	btn_new_game.pressed.connect(func() -> void: GameManager.begin_new_game_onboarding())
 	action_row.add_child(btn_new_game)
+
+	var btn_settings := Button.new()
+	btn_settings.text = "Cài Đặt"
+	btn_settings.custom_minimum_size = Vector2(145, 56)
+	_apply_btn(btn_settings, TEX_BTN_CREAM, 17)
+	btn_settings.pressed.connect(func() -> void: GameManager.open_settings())
+	action_row.add_child(btn_settings)
 
 func _refresh_story_page() -> void:
 	var p: Dictionary = story_pages[current_page]

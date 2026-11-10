@@ -192,9 +192,17 @@ func _build_ui() -> void:
 	lbl_rep_val = _make_icon_stat(stats_row, ICON_HEART, Color(0.76, 0.25, 0.18))
 	lbl_candy_val = _make_icon_stat(stats_row, ICON_CANDY, Color(0.55, 0.32, 0.12))
 
+	var btn_settings := Button.new()
+	btn_settings.text = "Cài Đặt"
+	btn_settings.custom_minimum_size = Vector2(135, 48)
+	_style_button(btn_settings, TEX_BTN_CREAM, 16)
+	btn_settings.pressed.connect(func() -> void: GameManager.open_settings())
+	top_hbox.add_child(btn_settings)
+
 	var btn_menu := Button.new()
 	btn_menu.text = "Bìa Sổ Ký Ức (Menu)"
-	btn_menu.custom_minimum_size = Vector2(215, 48)
+	btn_menu.custom_minimum_size = Vector2(205, 48)
+	btn_menu.set_meta("sfx_id", "page_flip")
 	_style_button(btn_menu, TEX_BTN_CREAM, 16)
 	btn_menu.pressed.connect(func() -> void:
 		GameManager.save_game()
@@ -296,6 +304,8 @@ func _build_ui() -> void:
 	var btn_restock_all := Button.new()
 	btn_restock_all.text = "Châm Đầy Hàng Lên Các Kệ Trong Quán"
 	btn_restock_all.custom_minimum_size = Vector2(340, 50)
+	btn_restock_all.set_meta("sfx_id", "shelf_stock")
+	btn_restock_all.set_meta("haptic_strength", "medium")
 	_style_button(btn_restock_all, TEX_BTN_YELLOW, 16)
 	btn_restock_all.pressed.connect(_on_restock_all_pressed)
 	bottom_hbox.add_child(btn_restock_all)
@@ -305,6 +315,7 @@ func _build_ui() -> void:
 	btn_candy.icon = ICON_CANDY
 	btn_candy.expand_icon = true
 	btn_candy.custom_minimum_size = Vector2(320, 50)
+	btn_candy.set_meta("sfx_id", "candy_jar")
 	_style_button(btn_candy, TEX_BTN_CREAM, 16)
 	btn_candy.pressed.connect(func() -> void: EconomyManager.refill_candy_jar())
 	bottom_hbox.add_child(btn_candy)
@@ -316,6 +327,8 @@ func _build_ui() -> void:
 	var btn_open_store := Button.new()
 	btn_open_store.text = "Kéo Cửa Mở Hàng Đón Khách (07:00 Sáng) >>"
 	btn_open_store.custom_minimum_size = Vector2(410, 50)
+	btn_open_store.set_meta("sfx_id", "wind_chime")
+	btn_open_store.set_meta("haptic_strength", "medium")
 	_style_button(btn_open_store, TEX_BTN_GREEN, 17)
 	btn_open_store.pressed.connect(_on_open_store_pressed)
 	bottom_hbox.add_child(btn_open_store)
@@ -449,6 +462,7 @@ func _refresh_items_grid() -> void:
 		var cost8: int = unit_wholesale * 8
 		var btn_buy8 := Button.new()
 		btn_buy8.text = "+8 (%sđ)" % EconomyManager.format_vnd(cost8)
+		btn_buy8.set_meta("sfx_id", "cash_coin")
 		_style_button(btn_buy8, TEX_BTN_GREEN, 14)
 		btn_buy8.pressed.connect(func() -> void: EconomyManager.buy_wholesale_pack(iid, 8))
 		btn_row.add_child(btn_buy8)
@@ -456,6 +470,7 @@ func _refresh_items_grid() -> void:
 		var cost16: int = unit_wholesale * 16
 		var btn_buy16 := Button.new()
 		btn_buy16.text = "+16 (%sđ)" % EconomyManager.format_vnd(cost16)
+		btn_buy16.set_meta("sfx_id", "cash_coin")
 		_style_button(btn_buy16, TEX_BTN_GREEN, 14)
 		btn_buy16.pressed.connect(func() -> void: EconomyManager.buy_wholesale_pack(iid, 16))
 		btn_row.add_child(btn_buy16)

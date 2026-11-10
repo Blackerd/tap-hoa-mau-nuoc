@@ -78,11 +78,56 @@ var level_configs: Dictionary = {
 
 var _minute_accumulator: float = 0.0
 const SECONDS_PER_TEN_MINUTES: float = 2.8
+var _audio_haptic_ref: Node = null
 
 func _ready() -> void:
+	_ensure_audio_haptic()
 	_init_default_shelves()
 	_roll_daily_weather()
 	call_deferred("_broadcast_initial_state")
+
+func _ensure_audio_haptic() -> Node:
+	if is_instance_valid(_audio_haptic_ref):
+		return _audio_haptic_ref
+	if get_tree() and get_tree().root:
+		var existing: Node = get_tree().root.get_node_or_null("AudioHapticManager")
+		if existing != null:
+			_audio_haptic_ref = existing
+			return _audio_haptic_ref
+	var script_res: GDScript = load("res://autoloads/audio_haptic_manager.gd")
+	if script_res != null:
+		var inst: Node = script_res.new()
+		inst.name = "AudioHapticManager"
+		_audio_haptic_ref = inst
+		if get_tree() and get_tree().root:
+			get_tree().root.add_child.call_deferred(inst)
+	return _audio_haptic_ref
+
+func play_sfx(sfx_id: String) -> void:
+	var ah: Node = _ensure_audio_haptic()
+	if ah and ah.has_method("play_sfx"):
+		ah.call("play_sfx", sfx_id)
+
+func trigger_haptic(strength: String = "light") -> void:
+	var ah: Node = _ensure_audio_haptic()
+	if ah and ah.has_method("trigger_haptic"):
+		ah.call("trigger_haptic", strength)
+
+func open_settings() -> void:
+	var ah: Node = _ensure_audio_haptic()
+	if ah and ah.has_method("open_settings"):
+		ah.call("open_settings")
+
+func close_settings() -> void:
+	var ah: Node = _ensure_audio_haptic()
+	if ah and ah.has_method("close_settings"):
+		ah.call("close_settings")
+
+func apply_telex_key(current_text: String, key_raw: String) -> String:
+	var ah: Node = _ensure_audio_haptic()
+	if ah and ah.has_method("apply_telex_key"):
+		return str(ah.call("apply_telex_key", current_text, key_raw))
+	return current_text + key_raw
 
 func _init_default_shelves() -> void:
 	saved_shelves = [
@@ -213,6 +258,8 @@ func _advance_ten_minutes() -> void:
 	if should_rush != is_rush_hour:
 		is_rush_hour = should_rush
 		if is_rush_hour:
+			play_sfx("school_drum")
+			trigger_haptic("heavy")
 			EventBus.rush_hour_changed.emit(true, "[Tan trường] Trống trường điểm! Học sinh ùa vào mua quà vặt!")
 			EventBus.toast_requested.emit("[Tan trường] Mì trẻ em, kẹo kéo, kem mút bán cực chạy!", Color("#C84B31"))
 		else:
@@ -288,6 +335,8 @@ func try_upgrade_store_level() -> bool:
 	store_level += 1
 	var next_cfg: Dictionary = level_configs[store_level]
 	save_game()
+	play_sfx("watercolor_up")
+	trigger_haptic("heavy")
 	EventBus.store_level_changed.emit(store_level, next_cfg["title"], next_cfg["reveal_radius"])
 	EventBus.stamp_effect_requested.emit("MỞ RỘNG CẤP %d" % store_level, Vector2(800, 420))
 	EventBus.toast_requested.emit("Màu nước đã loang rộng ra khu phố! Đạt %s!" % next_cfg["title"], Color("#6B8E78"))

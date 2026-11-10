@@ -255,6 +255,8 @@ func place_shelf_at(cell: Vector2i, furn_id: String, item_id: String, initial_st
 
 	if not is_free_starter:
 		GameManager.save_game()
+		GameManager.play_sfx("shelf_stock")
+		GameManager.trigger_haptic("heavy")
 		EventBus.toast_requested.emit("Đã đặt %s! Chạm 1 lần để châm hàng, Chạm đúp (2 lần) để đổi món." % furn.display_name, Color("#6B8E78"))
 	return true
 
@@ -282,6 +284,8 @@ func _unhandled_input(event: InputEvent) -> void:
 					var cust: CustomerEntity = child as CustomerEntity
 					var hit_box := Rect2(cust.position + Vector2(-42, -95), Vector2(84, 110))
 					if hit_box.has_point(world_mouse):
+						GameManager.play_sfx("wind_chime")
+						GameManager.trigger_haptic("medium")
 						cust.encourage_by_player()
 						return
 

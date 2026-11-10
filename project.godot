@@ -21,6 +21,7 @@ config/icon="res://icon.svg"
 EventBus="*res://autoloads/event_bus.gd"
 GameManager="*res://autoloads/game_manager.gd"
 EconomyManager="*res://autoloads/economy_manager.gd"
+AudioHapticManager="*res://autoloads/audio_haptic_manager.gd"
 
 [debug]
 

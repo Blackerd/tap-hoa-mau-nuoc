@@ -344,11 +344,13 @@ func complete_checkout(method: String) -> void:
 
 	match method:
 		"exact":
+			GameManager.play_sfx("cash_coin")
 			EconomyManager.add_money(total_bill)
 			EconomyManager.add_reputation(1)
 			mood_text = "+%sđ" % EconomyManager.format_vnd(total_bill)
 			mood_color = SAGE_GREEN
 		"candy":
+			GameManager.play_sfx("candy_jar")
 			if EconomyManager.use_candy_for_change():
 				EconomyManager.add_money(total_bill)
 				EconomyManager.add_reputation(2)
@@ -359,6 +361,7 @@ func complete_checkout(method: String) -> void:
 				EconomyManager.add_money(total_bill)
 				mood_text = "+%sđ" % EconomyManager.format_vnd(total_bill)
 		"credit":
+			GameManager.play_sfx("rubber_stamp")
 			var item_name: String = item.display_name if item else "Hàng tạp hóa"
 			EconomyManager.add_debt_record(
 				customer_name,

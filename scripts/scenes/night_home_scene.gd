@@ -274,7 +274,8 @@ func _build_ui() -> void:
 
 	var btn_menu := Button.new()
 	btn_menu.text = "<< Lưu & Về Bìa Sổ Ký Ức (Menu Chính)"
-	btn_menu.custom_minimum_size = Vector2(340, 52)
+	btn_menu.custom_minimum_size = Vector2(320, 52)
+	btn_menu.set_meta("sfx_id", "page_flip")
 	_style_button(btn_menu, TEX_BTN_CREAM, 16)
 	btn_menu.pressed.connect(func() -> void:
 		GameManager.save_game()
@@ -282,13 +283,22 @@ func _build_ui() -> void:
 	)
 	bottom_hbox.add_child(btn_menu)
 
+	var btn_settings := Button.new()
+	btn_settings.text = "Cài Đặt"
+	btn_settings.custom_minimum_size = Vector2(140, 52)
+	_style_button(btn_settings, TEX_BTN_CREAM, 16)
+	btn_settings.pressed.connect(func() -> void: GameManager.open_settings())
+	bottom_hbox.add_child(btn_settings)
+
 	var spacer := Control.new()
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	bottom_hbox.add_child(spacer)
 
 	var btn_next_day := Button.new()
 	btn_next_day.text = "Đi Ngủ & Sáng Mai Đi Chợ Sỉ (Qua Ngày %d) >>" % (GameManager.current_day + 1)
-	btn_next_day.custom_minimum_size = Vector2(440, 52)
+	btn_next_day.custom_minimum_size = Vector2(430, 52)
+	btn_next_day.set_meta("sfx_id", "wind_chime")
+	btn_next_day.set_meta("haptic_strength", "medium")
 	_style_button(btn_next_day, TEX_BTN_GREEN, 17)
 	btn_next_day.pressed.connect(func() -> void: GameManager.start_next_day())
 	bottom_hbox.add_child(btn_next_day)
@@ -380,6 +390,8 @@ func _refresh_debt_list() -> void:
 		btn_collect.icon = ICON_HEART
 		btn_collect.expand_icon = true
 		btn_collect.custom_minimum_size = Vector2(130, 44)
+		btn_collect.set_meta("sfx_id", "rubber_stamp")
+		btn_collect.set_meta("haptic_strength", "heavy")
 		_style_button(btn_collect, TEX_BTN_GREEN, 15)
 		btn_collect.pressed.connect(func() -> void:
 			EconomyManager.collect_debt(rid)

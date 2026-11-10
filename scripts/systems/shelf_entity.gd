@@ -62,6 +62,8 @@ func restock_from_warehouse() -> int:
 		_sync_parent_world()
 		play_bounce()
 		queue_redraw()
+		GameManager.play_sfx("shelf_stock")
+		GameManager.trigger_haptic("medium")
 		var item: ItemData = EconomyManager.item_catalog.get(item_id)
 		var item_name: String = item.display_name if item else item_id
 		EventBus.toast_requested.emit("Đã xếp +%d %s lên kệ!" % [added, item_name], Color("#6B8E78"))
